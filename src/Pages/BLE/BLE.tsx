@@ -1,17 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { BluetoothDevice, BluetoothRemoteGATTCharacteristic, BluetoothRemoteGATTServer, IBleProps, IFormData, RequestDeviceOptions } from './BLE.types';
-import { Space, Typography, Button, Modal, Form, Input, FormProps, Switch, Select, StatisticProps, Badge, Card } from 'antd';
-import { Layout } from 'antd';
+import { BluetoothDevice, BluetoothRemoteGATTCharacteristic, BluetoothRemoteGATTServer, IBglValues, IBleProps, IFormData, RequestDeviceOptions } from './BLE.types';
+import { Tabs, TabsProps, Statistic, Layout, Space, Typography, Button, Modal, Form, Input, FormProps, Switch, Select, StatisticProps, Badge, Card } from 'antd';
 import { cardio } from 'ldrs'
 import './BLE.css'
 import TextArea from 'antd/es/input/TextArea';
-import { Statistic } from 'antd';
 import CountUp from 'react-countup';
 import html2canvas from 'html2canvas';
 import { DownloadOutlined, LinkOutlined, FormOutlined, CaretRightOutlined, StopOutlined } from '@ant-design/icons';
 import { uploadAccFile, uploadCo2File } from './BLE.api';
-import { Tabs } from 'antd';
-import type { TabsProps } from 'antd';
 import Graph from '../../Components/Graph';
 
 
@@ -25,14 +21,6 @@ cardio.register()
 
 const { Title } = Typography;
 const { Content } = Layout;
-
-
-const contentStyle: React.CSSProperties = {
-    textAlign: 'center',
-    width: '100%',
-    backgroundColor: 'white'
-};
-
 
 const BLE: React.FC<IBleProps> = ({
     readServiceUUID,
@@ -71,7 +59,7 @@ const BLE: React.FC<IBleProps> = ({
     const [formData, setFormData] = useState<IFormData | null>(null)
 
     const [graphData, setGraphData] = useState<any>(null)
-    const [bglData, setBglData] = useState<any>(null)
+    const [bglData, setBglData] = useState<IBglValues | null>()
 
     const [form] = Form.useForm();
 
@@ -280,8 +268,6 @@ const BLE: React.FC<IBleProps> = ({
     };
 
     const onFinish: FormProps<IFormData>['onFinish'] = (values) => {
-        if (!values.diabetic)
-            values.diabetic = false
         if (!values.latestWeight)
             values.latestWeight = false
         setFormData(values)
@@ -361,35 +347,25 @@ const BLE: React.FC<IBleProps> = ({
         },
     ];
 
-    // const tp = () => {
-    //     console.log(process.env, "----------------------> env");
-    //     console.log(process.env.REACT_APP_BASE_URL, "----------------------> BASE_URL");
-    //     console.log(process.env.REACT_APP_TOKEN, "----------------------> TOKEN");
-    //     console.log(token, "-------------> token");
-    //     console.log(baseUrl, "-------------> baseUrl");
-    //     console.log(env, "-----------------> env");
-    // }
-
-
     return (
         <>
 
-            <Layout>
-                <Content style={contentStyle}>
+            <Layout className='Layout'>
+                <Content className='Content'>
                     <Title>{message}</Title>
-                    <Space wrap={true} size="large">
-                        <Button style={{ backgroundColor: "#83BF8D" }} type="primary" size={'large'} icon={<LinkOutlined />} onClick={connectToDevice}>Connect to Device</Button>
-                        {/* <Button style={{ backgroundColor: "#83BF8D" }} type="primary" size={'large'} onClick={tp}>TP</Button> */}
+                    <div className="button-container">
+
+                        <Button style={{ backgroundColor: "#83BF8D" }} type="primary" icon={<LinkOutlined />} onClick={connectToDevice}>Connect to Device</Button>
                         {device != null ? (
                             <>
-                                <Button style={{ backgroundColor: "#83BF8D" }} type="primary" size={'large'} icon={<FormOutlined />} onClick={fillForm}>Enter Details</Button>
-                                <Button style={{ backgroundColor: "#83BF8D" }} type="primary" size={'large'} icon={<CaretRightOutlined />} onClick={readCharacteristic}>Start</Button>
-                                <Button style={{ backgroundColor: "#83BF8D" }} type="primary" size={'large'} icon={<StopOutlined />} onClick={stopTimer}>Stop</Button>
+                                <Button style={{ backgroundColor: "#83BF8D" }} type="primary" icon={<FormOutlined />} onClick={fillForm}>Enter Details</Button>
+                                <Button style={{ backgroundColor: "#83BF8D" }} type="primary" icon={<CaretRightOutlined />} onClick={readCharacteristic}>Start</Button>
+                                <Button style={{ backgroundColor: "#83BF8D" }} type="primary" icon={<StopOutlined />} onClick={stopTimer}>Stop</Button>
                                 <br />
 
                             </>
                         ) : null}
-                    </Space>
+                    </div>
                     <br />
                     <br />
                     <Space wrap={true} size="large">
@@ -405,8 +381,8 @@ const BLE: React.FC<IBleProps> = ({
                                 color="#83BF8D"
                             ></l-cardio>
                             <br />
-                            <h2>Reading your data from device!!</h2>
-                            <h3>Keep Breathing ...</h3>
+                            <Title level={2}>Reading your data from device!!</Title>
+                            <Title level={3}>Keep Breathing ...</Title>
                         </div>
                     ) : null}
 
@@ -422,28 +398,41 @@ const BLE: React.FC<IBleProps> = ({
                     )}
 
 
-                    {graphData && (
+                    {graphData && bglData && (
                         <>
                             <Space wrap={true} size="large">
-                                <Button style={{ backgroundColor: "#83BF8D" }} icon={<DownloadOutlined />} type="primary" size={'large'} onClick={downloadFile}>Download Bin File</Button>
-                                {/* <Button style={{ backgroundColor: "#83BF8D" }} icon={<DownloadOutlined />} type="primary" size={'large'} onClick={downloadOnDemand}>Download on demand File</Button> */}
-                                <Button style={{ backgroundColor: "#83BF8D" }} icon={<DownloadOutlined />} type="primary" size={'large'} onClick={saveGraph}>Save Graph</Button>
+                                <Button style={{ backgroundColor: "#83BF8D" }} icon={<DownloadOutlined />} type="primary" onClick={downloadFile}>Download Bin File</Button>
+                                {/* <Button style={{ backgroundColor: "#83BF8D" }} icon={<DownloadOutlined />} type="primary" onClick={downloadOnDemand}>Download on demand File</Button> */}
+                                <Button style={{ backgroundColor: "#83BF8D" }} icon={<DownloadOutlined />} type="primary" onClick={saveGraph}>Save Graph</Button>
                             </Space>
 
-                            <div id='chart-container' >
-                                <Space direction="vertical" size="middle" style={{ width: '1000px' }}>
+                            <div id='chart-container' className="report-container">
+                                <Space direction="vertical" size="middle" style={{ width: '100%' }}>
 
-                                    <br /><br />
-                                    <Badge.Ribbon text={startTimestamp} color="#83BF8D" placement={'end'}>
+                                    <br />
+                                    <Badge.Ribbon text={startTimestamp} color="#83BF8D" placement={'start'} >
+                                        <br />
                                         <Card className="card-header" title={"Graph for Subject : " + formData?.subjectId} >
 
                                             <div className="card-container">
-                                                <Statistic title={<h2>Blood Glucose mg/dl</h2>} value={(bglData["blood_glucose_level_method2"]).toFixed(2)} formatter={formatter} />
+                                                <Statistic title={
+                                                    <div>
+                                                        <Title level={5}>Blood Glucose mg/dl</Title>
+                                                        <p>({bglData.range1} to {bglData.range2})</p>
+                                                    </div>
+                                                } value={(bglData?.BGL).toFixed(2)} formatter={formatter} />
                                                 <div className="data-container">
-                                                    <Statistic title={<h2>Glucose utilise rate mg/min</h2>} value={(graphData['payload']['gluocose_data']['Glucose_utilise_mg_per_min']).toFixed(2)} formatter={formatter} />
-                                                    <Statistic title={<h2>% calories from glucose</h2>} value={(graphData['payload']['gluocose_data']['percentage_calories_from_glucose']).toFixed(2)} formatter={formatter} />
-                                                    <Statistic title={<h2>EE cal per min</h2>} value={(graphData['payload']['gluocose_data']['EE_cal_per_min']).toFixed(2)} formatter={formatter} />
+                                                    <Card size="small" title="Glucose utilise rate mg/min" >
+                                                        <p>{formatter((graphData['payload']['gluocose_data']['Glucose_utilise_mg_per_min']).toFixed(2))}</p>
+                                                    </Card>
+                                                    <Card size="small" title="% calories from glucose" >
+                                                        <p>{formatter((graphData['payload']['gluocose_data']['percentage_calories_from_glucose']).toFixed(2))}</p>
+                                                    </Card>
+                                                    <Card size="small" title="EE cal per min" >
+                                                        <p>{formatter((graphData['payload']['gluocose_data']['EE_cal_per_min']).toFixed(2))}</p>
+                                                    </Card>
                                                 </div>
+                                                <br />
                                                 <Tabs defaultActiveKey="1" items={items} onChange={onChange} />
                                             </div>
                                         </Card>
@@ -510,8 +499,17 @@ const BLE: React.FC<IBleProps> = ({
                         </Select>
                     </Form.Item>
 
-                    <Form.Item label="Diabetic" name={"diabetic"} valuePropName="checked">
-                        <Switch />
+                    <Form.Item
+                        name="diabetic"
+                        label="Diabetic"
+                        rules={[{ required: true, message: 'Please select diabetic!' }]}
+                    >
+                        <Select placeholder="select diabetic">
+                            <Option value="C1">Non-Diabetic (FBG = 126)</Option>
+                            <Option value="C2">Diabetic-controlled  (FBG = 126-150)</Option>
+                            <Option value="C3">Diabetic-moderate (FBG = 150-200)</Option>
+                            <Option value="C4">Diabetic-severe (FBG {'>'} 200)</Option>
+                        </Select>
                     </Form.Item>
 
                     <Form.Item label="Latest Weight ?" name={"latestWeight"} valuePropName="checked">

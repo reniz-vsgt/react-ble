@@ -11,6 +11,12 @@ export interface IBleProps {
   env: string
 }
 
+export interface IBglValues {
+  range1: number,
+  range2: number,
+  BGL: number
+}
+
 
 export interface IFormData {
   subjectId: string
@@ -18,7 +24,7 @@ export interface IFormData {
   height: number
   weight: number
   gender: string
-  diabetic: boolean
+  diabetic: string
   latestWeight: boolean
   comments: string
 }

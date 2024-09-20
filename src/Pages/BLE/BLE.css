@@ -1,61 +1,47 @@
-@import url(https://cdn.jsdelivr.net/gh/moonspam/NanumSquare@1.0/nanumsquare.css);
-body {
+.button-container {
+  gap : 10px;
   display: flex;
-  height: 100vh;
+  flex-wrap: wrap;
   justify-content: center;
-  align-items: center;
 }
-.App {
-  font-family: NanumSquare;
-  text-align: center;
-}
+
 .timer-wrapper {
   margin-top: 60px;
 }
+
 .time {
   font-size: 30px;
 }
+
 .right {
   margin-left: 20px;
 }
+
 .unit {
   margin-left: 10px;
   font-size: 16px;
 }
-.button-wrapper {
-  display: flex;
-  margin-top: 40px;
-}
-.button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 78px;
-  height: 38px;
-  background-color: #85159b;
-  color: white;
-  margin: 5px 20px;
-  border-radius: 10px;
-}
-.button:hover {
-  cursor: pointer;
+
+.report-container {
+  margin-left: 5vw;
+  margin-right: 5vw;
 }
 
-.card-container{
-  display: flex;
-  flex-direction: column;
-  align-items:center;
-  /* width: 1000px; */
-}
-
-.card-header{
-  width: 1000px;
-
-}
-
-.data-container{
+.data-container {
   display: flex;
   gap: 5px;
-  justify-content: space-between;
-  width: 100%;
+  justify-content: space-evenly;
+  overflow: scroll;
+}
+
+.Layout {
+  padding: 10px;
+  height: 100vh;
+  width: 100vw;
+  background-color: white
+}
+
+.Content {
+  text-align: center;
+  background-color: white
 }

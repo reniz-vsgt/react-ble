@@ -1,27 +1,5 @@
-import { IFormData } from "./BLE.types";
+import { IBglValues, IFormData } from "./BLE.types";
 
-export const getBgl = async (token: string, baseUrl: string, startTimestamp: string) => {
-    try {
-
-        const myHeaders = new Headers();
-        myHeaders.append("Accept", "application/json");
-        myHeaders.append("Authorization", "Bearer " + token);
-        const requestOptions = {
-            method: "GET",
-            headers: myHeaders,
-        };
-        const response = await fetch(`${baseUrl}/api/v1/vsgt-data-service/getBloodGlucoseLevel?timestamp=${startTimestamp}`, requestOptions)
-        if (!response.ok) {
-            alert(`${(await response.json()).message} \nPlease try again!!`)
-            throw new Error(`HTTP error! Message: ${(await response.json()).message} Status: ${response.status}`);
-        }
-        const bgl = await response.json()
-        return bgl.payload
-    } catch (error) {
-        console.error(error, "----------> error");
-
-    }
-}
 
 export const uploadAccFile = async (token: string, baseUrl: string, deviceId: string, startTimestamp: string, fileData: string[][]) => {
     try {
@@ -79,7 +57,11 @@ export const uploadCo2File = async (fileData: Uint8Array, baseUrl: string, token
             }
 
             const graphData = await response.json();
-            const bglValues = await getBgl(token, baseUrl, startTimestamp)
+            const bglValues:IBglValues = {
+                range1 : graphData.payload.gluocose_data.range1,
+                range2 : graphData.payload.gluocose_data.range2,
+                BGL: graphData.payload.gluocose_data.BGL,
+            }
             return { graphData, bglValues }
         } catch (error) {
             console.error("Error:", error);
