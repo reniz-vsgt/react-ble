@@ -1,6 +1,5 @@
 import { Page, Text, View, Document, StyleSheet } from '@react-pdf/renderer';
 
-// Define corporate design styles
 const styles = StyleSheet.create({
     page: {
         padding: 40,
@@ -13,7 +12,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         marginBottom: 20,
-        borderBottom: '2px solid #83BF8D', 
+        borderBottom: '2px solid #83BF8D',
         paddingBottom: 10,
     },
     logo: {
@@ -87,24 +86,25 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         color: '#777',
     },
+    smallText: {
+        fontSize: 10,
+        color: '#555',
+    },
 });
 
 export const MedicalReport = ({ data }: any) => (
     <Document>
         <Page size="A4" style={styles.page}>
             <View style={styles.headerContainer}>
-                {/* <Image style={styles.logo} src="https://via.placeholder.com/60x60?text=Logo" /> */}
                 <View style={styles.companyDetails}>
                     <Text style={styles.companyName}>Breath AI</Text>
-                    <Text>201, Varsha Airawat Bldg, Baner Rd, Pune, Maharashtra 411045</Text>
-                    <Text>Email: info@innoscent.in</Text>
+                    <Text>Your Metabolic Profile Report </Text>
                 </View>
             </View>
 
-            {/* Personal Information Section */}
             <Text style={styles.sectionTitle}>Personal Information</Text>
             <View style={styles.personalInfo}>
-                <Text style={styles.fieldLabel}>Name: <Text style={styles.fieldValue}>{data.name}</Text></Text>
+                <Text style={styles.fieldLabel}>Name/ID: <Text style={styles.fieldValue}>{data.name}</Text></Text>
                 <Text style={styles.fieldLabel}>Age: <Text style={styles.fieldValue}>{data.age}</Text></Text>
                 <Text style={styles.fieldLabel}>Diabetic: <Text style={styles.fieldValue}>{data.diabetic}</Text></Text>
                 <Text style={styles.fieldLabel}>Gender: <Text style={styles.fieldValue}>{data.gender}</Text></Text>
@@ -112,16 +112,17 @@ export const MedicalReport = ({ data }: any) => (
                 <Text style={styles.fieldLabel}>Weight: <Text style={styles.fieldValue}>{data.weight} kg</Text></Text>
             </View>
 
-            {/* Medical Information Section */}
-            <Text style={styles.sectionTitle}>Medical Information</Text>
             <View style={styles.table}>
                 <View style={styles.tableRow}>
                     <Text style={styles.tableColHeader}>Parameter</Text>
                     <Text style={styles.tableColHeader}>Value</Text>
                 </View>
                 <View style={styles.tableRow}>
-                    <Text style={styles.tableCol}>Blood Glucose Level</Text>
-                    <Text style={styles.tableCol}>{data.bloodGlucose} mg/dL (Range: {data.glucoseRange.lower} - {data.glucoseRange.upper} mg/dL)</Text>
+                    <Text style={styles.tableCol}>Estimated Blood Glucose Level</Text>
+                    <View style={styles.tableCol}>
+                        <Text>{data.bloodGlucose} mg/dL</Text>
+                        <Text style={styles.smallText}>(Your estimated range: {data.glucoseRange.lower} - {data.glucoseRange.upper} mg/dL)</Text>
+                    </View>
                 </View>
                 <View style={styles.tableRow}>
                     <Text style={styles.tableCol}>EE Cal per Minute</Text>
@@ -137,9 +138,7 @@ export const MedicalReport = ({ data }: any) => (
                 </View>
             </View>
 
-            {/* Footer */}
             <Text style={styles.footer}>Generated on {data.startTime}</Text>
-            <Text style={styles.footer}>Confidential Report - For Medical Use Only</Text>
         </Page>
     </Document>
 );

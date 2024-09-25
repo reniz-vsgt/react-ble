@@ -126,7 +126,7 @@ const Report = () => {
                     <Button style={{ backgroundColor: "#83BF8D" }} icon={<DownloadOutlined />} type="primary" onClick={downloadFile}>Download Bin File</Button>
                     <Button style={{ backgroundColor: "#83BF8D" }} icon={<DownloadOutlined />} type="primary" onClick={saveGraph}>Save Graph</Button>
                     <Button style={{ backgroundColor: "#83BF8D" }} icon={<HistoryOutlined />} type="primary" onClick={gotoHome}>Record Again</Button>
-                    <PDFDownloadLink document={<MedicalReport data={data} />} fileName={`${formData.subjectId}_${startTimestamp}_medical_report.pdf`}>
+                    <PDFDownloadLink document={<MedicalReport data={data} />} fileName={`${formData.subjectId}_${startTimestamp}_report.pdf`}>
                         <Button style={{ backgroundColor: "#83BF8D" }} icon={<DownloadOutlined />} type="primary">Download Report</Button>
                     </PDFDownloadLink>
                 </div>
@@ -138,7 +138,11 @@ const Report = () => {
                     <br />
                     <Badge.Ribbon text={startTimestamp} color="#83BF8D" placement={'start'} >
                         <br />
-                        <Card className="card-header" title={"Graph for Subject : " + formData?.subjectId} >
+                        <Card className="card-header" title={
+                            <p>
+                                Metabloic profile <br /> {formData?.subjectId}
+                            </p>
+                        } >
 
                             <div className="card-container">
                                 <Statistic title={

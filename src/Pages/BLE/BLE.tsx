@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { BluetoothDevice, BluetoothRemoteGATTCharacteristic, BluetoothRemoteGATTServer, IFormData, RequestDeviceOptions } from './BLE.types';
-import { Space, Typography, Button, Modal, Form, Input, FormProps, Switch, Select } from 'antd';
+import { Space, Typography, Button, Modal, Form, Input, FormProps, Switch, Select, message } from 'antd';
 import { cardio } from 'ldrs'
 import './BLE.css'
 import TextArea from 'antd/es/input/TextArea';
 import { LinkOutlined, FormOutlined, CaretRightOutlined, StopOutlined } from '@ant-design/icons';
 import { uploadAccFile, uploadCo2File } from './BLE.api';
 import { useNavigate } from "react-router-dom";
-import { baseUrl, message, onDemandCharUUID, readCharUUID, readServiceUUID, token, writeCharUUID, writeServiceUUID, writeValue } from '../../Constants/Constants';
+import { baseUrl, onDemandCharUUID, readCharUUID, readServiceUUID, token, writeCharUUID, writeServiceUUID, writeValue } from '../../Constants/Constants';
 
 const { Option } = Select;
 
@@ -16,6 +16,7 @@ cardio.register()
 const { Title } = Typography;
 
 const BLE: React.FC = () => {
+    const [messageApi, contextHolder] = message.useMessage();
 
     const [device, setDevice] = useState<BluetoothDevice | null>(null);
     const [characteristicValue, setCharacteristicValue] = useState<Uint8Array>();
@@ -43,6 +44,12 @@ const BLE: React.FC = () => {
     const [form] = Form.useForm();
     const navigate = useNavigate();
 
+    const errorAlert = (message: string) => {
+        messageApi.open({
+            type: 'error',
+            content: message,
+        });
+    };
 
     const getTimestamp = () => {
         const now = new Date();
@@ -139,7 +146,7 @@ const BLE: React.FC = () => {
     const writeCharacteristic = async (newValue: string) => {
         if (!device) {
             console.error('No device connected');
-            alert("Please connect a device first")
+            errorAlert("Please connect a device first")
             return;
         }
         try {
@@ -154,7 +161,7 @@ const BLE: React.FC = () => {
 
         } catch (error) {
             console.error('Failed to write characteristic:', error);
-            alert("Device disconnected")
+            errorAlert("Device disconnected")
         }
     };
 
@@ -167,12 +174,12 @@ const BLE: React.FC = () => {
         await writeCharacteristic(writeValue)
         if (!device) {
             console.error('No device connected');
-            alert('Please connect a device first');
+            errorAlert("Please connect a device first");
             return;
         }
         if (!formData) {
             console.error('Please enter subject details first');
-            alert('Please enter subject details first');
+            errorAlert("Please enter subject details first")
             return;
         }
         try {
@@ -195,13 +202,13 @@ const BLE: React.FC = () => {
                 catch (error) {
                     console.error('Failed to read data:', error);
 
-                    alert("Device disconnected")
+                    errorAlert("Device disconnected")
                 }
             }
 
         } catch (error) {
             console.error('Failed to read characteristic:', error);
-            alert("Device disconnected")
+            errorAlert("Device disconnected")
         }
     };
 
@@ -230,12 +237,16 @@ const BLE: React.FC = () => {
         await audio.play()
         setLoader(false)
         clearInterval(timer)
-        if (formData) {
-            const { graphData, bglData } = await uploadCo2File(finalData, baseUrl, token, device?.name ? device.name : "", startTimestamp, formData)
-            if(graphData && bglData)
-                navigate("/report", { state: { graphData, bglData, startTimestamp, finalData, formData } });
+        try {
+            if (formData) {
+                const { graphData, bglData } = await uploadCo2File(finalData, baseUrl, token, device?.name ? device.name : "", startTimestamp, formData)
+                uploadAccFile(token, baseUrl, device?.name ? device.name : "", startTimestamp, onDemandData)
+                if (graphData && bglData)
+                    navigate("/report", { state: { graphData, bglData, startTimestamp, finalData, formData } });
+            }
+        } catch (error: any) {
+            errorAlert(error.message)
         }
-        uploadAccFile(token, baseUrl, device?.name ? device.name : "", startTimestamp, onDemandData)
     }
 
     const startTimer = async () => {
@@ -285,9 +296,10 @@ const BLE: React.FC = () => {
 
     return (
         <>
+            {contextHolder}
 
-
-            <Title>{message}</Title>
+            <Title>New Breath Sample</Title>
+            <Title level={3}> Get your metabolic profile </Title>
             <div className="button-container">
 
                 <Button style={{ backgroundColor: "#83BF8D" }} type="primary" icon={<LinkOutlined />} onClick={connectToDevice}>Connect to Device</Button>
@@ -352,21 +364,21 @@ const BLE: React.FC = () => {
                         <Input />
                     </Form.Item>
                     <Form.Item
-                        label="Age"
+                        label="Age (years)"
                         name="age"
                         rules={[{ required: true, message: 'Please input your age!' }]}
                     >
                         <Input type='number' />
                     </Form.Item>
                     <Form.Item
-                        label="Height"
+                        label="Height (cm)"
                         name="height"
                         rules={[{ required: true, message: 'Please input your height!' }]}
                     >
                         <Input type='number' />
                     </Form.Item>
                     <Form.Item
-                        label="Weight"
+                        label="Weight (kg)"
                         name="weight"
                         rules={[{ required: true, message: 'Please input your weight!' }]}
                     >
@@ -375,7 +387,7 @@ const BLE: React.FC = () => {
 
                     <Form.Item
                         name="gender"
-                        label="Gender"
+                        label="Select Gender"
                         rules={[{ required: true, message: 'Please select gender!' }]}
                     >
                         <Select placeholder="select your gender">
@@ -387,7 +399,7 @@ const BLE: React.FC = () => {
 
                     <Form.Item
                         name="diabetic"
-                        label="Diabetic"
+                        label="Select Diabetic Category"
                         rules={[{ required: true, message: 'Please select diabetic!' }]}
                     >
                         <Select placeholder="select diabetic">
