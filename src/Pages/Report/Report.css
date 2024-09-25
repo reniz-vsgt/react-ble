@@ -1,0 +1,19 @@
+.report-container {
+    margin-left: 5vw;
+    margin-right: 5vw;
+}
+
+
+.data-container {
+    display: flex;
+    gap: 5px;
+    justify-content: space-evenly;
+    overflow: scroll;
+}
+
+.button-container {
+    gap: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
