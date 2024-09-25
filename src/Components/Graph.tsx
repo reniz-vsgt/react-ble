@@ -17,8 +17,8 @@ const Graph: React.FC<any> = ({
                             showMark: false,
                         },
                     ]}
-                    height={600}
-                    width={900}
+                    height={200}
+                    width={400}
                     margin={{ left: 35, right: 30, top: 30, bottom: 60 }}
                     grid={{ vertical: true, horizontal: true }}
                 />

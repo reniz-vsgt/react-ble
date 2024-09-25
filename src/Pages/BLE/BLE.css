@@ -1,5 +1,5 @@
 .button-container {
-  gap : 10px;
+  gap: 10px;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -20,28 +20,4 @@
 .unit {
   margin-left: 10px;
   font-size: 16px;
-}
-
-.report-container {
-  margin-left: 5vw;
-  margin-right: 5vw;
-}
-
-.data-container {
-  display: flex;
-  gap: 5px;
-  justify-content: space-evenly;
-  overflow: scroll;
-}
-
-.Layout {
-  padding: 10px;
-  height: 100vh;
-  width: 100vw;
-  background-color: white
-}
-
-.Content {
-  text-align: center;
-  background-color: white
 }

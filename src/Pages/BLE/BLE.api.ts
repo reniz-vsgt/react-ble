@@ -16,8 +16,6 @@ export const uploadAccFile = async (token: string, baseUrl: string, deviceId: st
             headers: myHeaders,
             body: formdata
         };
-
-        console.log(baseUrl, "----> baseUrl");
         
         const response = await fetch(`${baseUrl}/api/v2/vsgt-recording-service/uploadBinFile?deviceId=${deviceId}&startTime=${startTimestamp}&fileType=acc&fileUploadType=single`, requestOptions)
         if (!response.ok) {
@@ -57,20 +55,20 @@ export const uploadCo2File = async (fileData: Uint8Array, baseUrl: string, token
             }
 
             const graphData = await response.json();
-            const bglValues:IBglValues = {
+            const bglData:IBglValues = {
                 range1 : graphData.payload.gluocose_data.range1,
                 range2 : graphData.payload.gluocose_data.range2,
                 BGL: graphData.payload.gluocose_data.BGL,
             }
-            return { graphData, bglValues }
+            return { graphData, bglData }
         } catch (error) {
             console.error("Error:", error);
-            return { graphData: null, bglValues: null }
+            return { graphData: null, bglData: null }
         }
         
     } catch (error) {
         console.error(error, "----------> error");
-        return { graphData: null, bglValues: null }
+        return { graphData: null, bglData: null }
 
 
     }

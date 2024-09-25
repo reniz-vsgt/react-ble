@@ -1,39 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { BluetoothDevice, BluetoothRemoteGATTCharacteristic, BluetoothRemoteGATTServer, IBglValues, IBleProps, IFormData, RequestDeviceOptions } from './BLE.types';
-import { Tabs, TabsProps, Statistic, Layout, Space, Typography, Button, Modal, Form, Input, FormProps, Switch, Select, StatisticProps, Badge, Card } from 'antd';
+import { BluetoothDevice, BluetoothRemoteGATTCharacteristic, BluetoothRemoteGATTServer, IFormData, RequestDeviceOptions } from './BLE.types';
+import { Space, Typography, Button, Modal, Form, Input, FormProps, Switch, Select } from 'antd';
 import { cardio } from 'ldrs'
 import './BLE.css'
 import TextArea from 'antd/es/input/TextArea';
-import CountUp from 'react-countup';
-import html2canvas from 'html2canvas';
-import { DownloadOutlined, LinkOutlined, FormOutlined, CaretRightOutlined, StopOutlined } from '@ant-design/icons';
+import { LinkOutlined, FormOutlined, CaretRightOutlined, StopOutlined } from '@ant-design/icons';
 import { uploadAccFile, uploadCo2File } from './BLE.api';
-import Graph from '../../Components/Graph';
-
-
-const formatter: StatisticProps['formatter'] = (value) => (
-    <CountUp end={value as number} separator="," />
-);
+import { useNavigate } from "react-router-dom";
+import { baseUrl, message, onDemandCharUUID, readCharUUID, readServiceUUID, token, writeCharUUID, writeServiceUUID, writeValue } from '../../Constants/Constants';
 
 const { Option } = Select;
 
 cardio.register()
 
 const { Title } = Typography;
-const { Content } = Layout;
 
-const BLE: React.FC<IBleProps> = ({
-    readServiceUUID,
-    onDemandCharUUID,
-    readCharUUID,
-    writeServiceUUID,
-    writeCharUUID,
-    writeValue,
-    message,
-    token,
-    baseUrl,
-    env
-}) => {
+const BLE: React.FC = () => {
 
     const [device, setDevice] = useState<BluetoothDevice | null>(null);
     const [characteristicValue, setCharacteristicValue] = useState<Uint8Array>();
@@ -58,10 +40,9 @@ const BLE: React.FC<IBleProps> = ({
     const [startTimestamp, setStartTimestamp] = useState<string>("")
     const [formData, setFormData] = useState<IFormData | null>(null)
 
-    const [graphData, setGraphData] = useState<any>(null)
-    const [bglData, setBglData] = useState<IBglValues | null>()
-
     const [form] = Form.useForm();
+    const navigate = useNavigate();
+
 
     const getTimestamp = () => {
         const now = new Date();
@@ -91,6 +72,8 @@ const BLE: React.FC<IBleProps> = ({
 
 
     useEffect((): void => {
+        if (seconds === 60)
+            stopTimer()
         makeTimeForm(seconds);
     }, [seconds]);
 
@@ -178,6 +161,8 @@ const BLE: React.FC<IBleProps> = ({
 
 
     const readCharacteristic = async () => {
+        const audio = new Audio("/start.wav")
+        await audio.play()
         setFinalData(new Uint8Array(0));
         await writeCharacteristic(writeValue)
         if (!device) {
@@ -241,14 +226,14 @@ const BLE: React.FC<IBleProps> = ({
     }
 
     const stopTimer = async () => {
-        device?.gatt?.disconnect();
-        setDevice(null)
+        const audio = new Audio("/stop.wav")
+        await audio.play()
         setLoader(false)
         clearInterval(timer)
         if (formData) {
-            const { graphData, bglValues } = await uploadCo2File(finalData, baseUrl, token, device?.name ? device.name : "", startTimestamp, formData)
-            setGraphData(graphData)
-            setBglData(bglValues)
+            const { graphData, bglData } = await uploadCo2File(finalData, baseUrl, token, device?.name ? device.name : "", startTimestamp, formData)
+            if(graphData && bglData)
+                navigate("/report", { state: { graphData, bglData, startTimestamp, finalData, formData } });
         }
         uploadAccFile(token, baseUrl, device?.name ? device.name : "", startTimestamp, onDemandData)
     }
@@ -276,34 +261,6 @@ const BLE: React.FC<IBleProps> = ({
 
     };
 
-    const downloadFile = () => {
-        const filename = `${startTimestamp}_${formData?.subjectId}.bin`
-        const blob = new Blob([finalData], { type: 'application/octet-stream' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-    }
-
-    const saveGraph = () => {
-        const filename = `${startTimestamp}_${formData?.subjectId}.png`
-        const chartContainer = document.getElementById('chart-container');
-        if (chartContainer) {
-            html2canvas(chartContainer).then(canvas => {
-                const pngUrl = canvas.toDataURL('image/png');
-                const a = document.createElement('a');
-                a.href = pngUrl;
-                a.download = filename;
-                a.click();
-            });
-        }
-
-    }
-
     const fillForm = () => {
         const formdata = localStorage.getItem("form")
         if (formdata) {
@@ -314,138 +271,67 @@ const BLE: React.FC<IBleProps> = ({
         setIsModalOpen(true)
     }
 
-    function downloadOnDemand() {
-        const fileName = `${startTimestamp}_${formData?.subjectId}_onDemand.csv`
-        let csvContent = "data:text/csv;charset=utf-8," + onDemandData.join("\n");
-        var encodedUri = encodeURI(csvContent);
-        var link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
-        link.setAttribute("download", fileName);
-        document.body.appendChild(link);
-        link.click();
-    }
+    // function downloadOnDemand() {
+    //     const fileName = `${startTimestamp}_${formData?.subjectId}_onDemand.csv`
+    //     let csvContent = "data:text/csv;charset=utf-8," + onDemandData.join("\n");
+    //     var encodedUri = encodeURI(csvContent);
+    //     var link = document.createElement("a");
+    //     link.setAttribute("href", encodedUri);
+    //     link.setAttribute("download", fileName);
+    //     document.body.appendChild(link);
+    //     link.click();
+    // }
 
-    const onChange = (key: string) => {
-        console.log(key);
-    };
-
-    const items: TabsProps['items'] = [
-        {
-            key: '1',
-            label: 'Breath Co2 percentage',
-            children: <Graph x={graphData?.payload?.ticks} y={graphData?.payload?.co2_percentage} />,
-        },
-        {
-            key: '2',
-            label: 'Breath Humidity',
-            children: <Graph x={graphData?.payload?.ticks} y={graphData?.payload?.humidity} />,
-        },
-        {
-            key: '3',
-            label: 'Breath Temperature',
-            children: <Graph x={graphData?.payload?.ticks} y={graphData?.payload?.temp} />,
-        },
-    ];
 
     return (
         <>
 
-            <Layout className='Layout'>
-                <Content className='Content'>
-                    <Title>{message}</Title>
-                    <div className="button-container">
 
-                        <Button style={{ backgroundColor: "#83BF8D" }} type="primary" icon={<LinkOutlined />} onClick={connectToDevice}>Connect to Device</Button>
-                        {device != null ? (
-                            <>
-                                <Button style={{ backgroundColor: "#83BF8D" }} type="primary" icon={<FormOutlined />} onClick={fillForm}>Enter Details</Button>
-                                <Button style={{ backgroundColor: "#83BF8D" }} type="primary" icon={<CaretRightOutlined />} onClick={readCharacteristic}>Start</Button>
-                                <Button style={{ backgroundColor: "#83BF8D" }} type="primary" icon={<StopOutlined />} onClick={stopTimer}>Stop</Button>
-                                <br />
+            <Title>{message}</Title>
+            <div className="button-container">
 
-                            </>
-                        ) : null}
+                <Button style={{ backgroundColor: "#83BF8D" }} type="primary" icon={<LinkOutlined />} onClick={connectToDevice}>Connect to Device</Button>
+                {device != null ? (
+                    <>
+                        <Button style={{ backgroundColor: "#83BF8D" }} type="primary" icon={<FormOutlined />} onClick={fillForm}>Enter Details</Button>
+                        <Button style={{ backgroundColor: "#83BF8D" }} type="primary" icon={<CaretRightOutlined />} onClick={readCharacteristic}>Start</Button>
+                        <Button style={{ backgroundColor: "#83BF8D" }} type="primary" icon={<StopOutlined />} onClick={stopTimer}>Stop</Button>
+                        <br />
+
+                    </>
+                ) : null}
+            </div>
+            <br />
+            <br />
+            <Space wrap={true} size="large">
+                {device && <p>Connected to device: {device.name}</p>}
+
+            </Space>
+            {loader ? (
+                <div>
+                    <l-cardio
+                        size="200"
+                        stroke="4"
+                        speed="2"
+                        color="#83BF8D"
+                    ></l-cardio>
+                    <br />
+                    <Title level={2}>Reading your data from device!!</Title>
+                    <Title level={3}>Keep Breathing ...</Title>
+                </div>
+            ) : null}
+
+            {device && (
+                <div className="timer-wrapper">
+                    <div>
+                        <span className="time">{min}</span>
+                        <span className="unit">min</span>
+                        <span className="time right">{sec}</span>
+                        <span className="unit">sec</span>
                     </div>
-                    <br />
-                    <br />
-                    <Space wrap={true} size="large">
-                        {device && <p>Connected to device: {device.name}</p>}
+                </div>
+            )}
 
-                    </Space>
-                    {loader ? (
-                        <div>
-                            <l-cardio
-                                size="200"
-                                stroke="4"
-                                speed="2"
-                                color="#83BF8D"
-                            ></l-cardio>
-                            <br />
-                            <Title level={2}>Reading your data from device!!</Title>
-                            <Title level={3}>Keep Breathing ...</Title>
-                        </div>
-                    ) : null}
-
-                    {device && (
-                        <div className="timer-wrapper">
-                            <div>
-                                <span className="time">{min}</span>
-                                <span className="unit">min</span>
-                                <span className="time right">{sec}</span>
-                                <span className="unit">sec</span>
-                            </div>
-                        </div>
-                    )}
-
-
-                    {graphData && bglData && (
-                        <>
-                            <Space wrap={true} size="large">
-                                <Button style={{ backgroundColor: "#83BF8D" }} icon={<DownloadOutlined />} type="primary" onClick={downloadFile}>Download Bin File</Button>
-                                {/* <Button style={{ backgroundColor: "#83BF8D" }} icon={<DownloadOutlined />} type="primary" onClick={downloadOnDemand}>Download on demand File</Button> */}
-                                <Button style={{ backgroundColor: "#83BF8D" }} icon={<DownloadOutlined />} type="primary" onClick={saveGraph}>Save Graph</Button>
-                            </Space>
-
-                            <div id='chart-container' className="report-container">
-                                <Space direction="vertical" size="middle" style={{ width: '100%' }}>
-
-                                    <br />
-                                    <Badge.Ribbon text={startTimestamp} color="#83BF8D" placement={'start'} >
-                                        <br />
-                                        <Card className="card-header" title={"Graph for Subject : " + formData?.subjectId} >
-
-                                            <div className="card-container">
-                                                <Statistic title={
-                                                    <div>
-                                                        <Title level={5}>Blood Glucose mg/dl</Title>
-                                                        <p>({bglData.range1} to {bglData.range2})</p>
-                                                    </div>
-                                                } value={(bglData?.BGL).toFixed(2)} formatter={formatter} />
-                                                <div className="data-container">
-                                                    <Card size="small" title="Glucose utilise rate mg/min" >
-                                                        <p>{formatter((graphData['payload']['gluocose_data']['Glucose_utilise_mg_per_min']).toFixed(2))}</p>
-                                                    </Card>
-                                                    <Card size="small" title="% calories from glucose" >
-                                                        <p>{formatter((graphData['payload']['gluocose_data']['percentage_calories_from_glucose']).toFixed(2))}</p>
-                                                    </Card>
-                                                    <Card size="small" title="EE cal per min" >
-                                                        <p>{formatter((graphData['payload']['gluocose_data']['EE_cal_per_min']).toFixed(2))}</p>
-                                                    </Card>
-                                                </div>
-                                                <br />
-                                                <Tabs defaultActiveKey="1" items={items} onChange={onChange} />
-                                            </div>
-                                        </Card>
-                                    </Badge.Ribbon>
-
-                                </Space>
-                            </div>
-
-                        </>
-                    )}
-
-                </Content>
-            </Layout>
 
             <Modal title="Enter Details" open={isModalOpen} footer={null} onCancel={handleCancel}>
                 <Form
