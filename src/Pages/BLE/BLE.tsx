@@ -7,7 +7,7 @@ import TextArea from 'antd/es/input/TextArea';
 import { LinkOutlined, FormOutlined, CaretRightOutlined, StopOutlined } from '@ant-design/icons';
 import { uploadAccFile, uploadCo2File } from './BLE.api';
 import { useNavigate } from "react-router-dom";
-import { baseUrl, onDemandCharUUID, readCharUUID, readServiceUUID, token, writeCharUUID, writeServiceUUID, writeValue } from '../../Constants/Constants';
+import { baseUrl, onDemandCharUUID, readCharUUID, readServiceUUID, writeCharUUID, writeServiceUUID, writeValue } from '../../Constants/Constants';
 
 const { Option } = Select;
 
@@ -168,21 +168,21 @@ const BLE: React.FC = () => {
 
 
     const readCharacteristic = async () => {
-        const audio = new Audio("/start.wav")
-        await audio.play()
-        setFinalData(new Uint8Array(0));
-        await writeCharacteristic(writeValue)
-        if (!device) {
-            console.error('No device connected');
-            errorAlert("Please connect a device first");
-            return;
-        }
-        if (!formData) {
-            console.error('Please enter subject details first');
-            errorAlert("Please enter subject details first")
-            return;
-        }
         try {
+            setFinalData(new Uint8Array(0));
+            await writeCharacteristic(writeValue)
+            if (!device) {
+                console.error('No device connected');
+                errorAlert("Please connect a device first");
+                return;
+            }
+            if (!formData) {
+                console.error('Please enter subject details first');
+                errorAlert("Please enter subject details first")
+                return;
+            }
+            const audio = new Audio("/start.wav")
+            await audio.play()
             if (service) {
                 try {
                     setStartTimestamp("")
@@ -239,8 +239,14 @@ const BLE: React.FC = () => {
         clearInterval(timer)
         try {
             if (formData) {
+                const token = localStorage.getItem('token')
+                if (!token) {
+                    errorAlert("Please login first")
+                    navigate("/login")
+                    return
+                }
                 const { graphData, bglData } = await uploadCo2File(finalData, baseUrl, token, device?.name ? device.name : "", startTimestamp, formData)
-                uploadAccFile(token, baseUrl, device?.name ? device.name : "", startTimestamp, onDemandData)
+                await uploadAccFile(token, baseUrl, device?.name ? device.name : "", startTimestamp, onDemandData)
                 if (graphData && bglData)
                     navigate("/report", { state: { graphData, bglData, startTimestamp, finalData, formData } });
             }
@@ -297,9 +303,8 @@ const BLE: React.FC = () => {
     return (
         <>
             {contextHolder}
-
-            <Title>New Breath Sample</Title>
-            <Title level={3}> Get your metabolic profile </Title>
+            <Title style={{ color: "#205274", fontFamily: "'Poppins', sans-serif" }}>New Breath Sample</Title>
+            <Title style={{ fontFamily: "'Poppins', sans-serif" }} level={3}> Get your metabolic profile </Title>
             <div className="button-container">
 
                 <Button style={{ backgroundColor: "#83BF8D" }} type="primary" icon={<LinkOutlined />} onClick={connectToDevice}>Connect to Device</Button>
