@@ -20,7 +20,7 @@ const Report = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const gotoHome = () => {
-        navigate("/");
+        navigate("/record");
     }
     if (location.state === null) {
         return (
@@ -85,7 +85,6 @@ const Report = () => {
     ];
 
 
-    // ----------------------------------------------------------------------------------
 
     const getDiabeticStatus = (diabeticKey: string) => {
         switch (diabeticKey) {
