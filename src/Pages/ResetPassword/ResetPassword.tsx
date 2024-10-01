@@ -5,12 +5,14 @@ import { LockOutlined } from '@ant-design/icons';
 import { useState } from 'react';
 import { IProps, IResetPasswordForm } from './ResetPassword.interface';
 import { resetPasswordAPI } from './ResetPassword.api';
+import { useNavigate } from 'react-router-dom';
 const { Title } = Typography;
 
 
 const ResetPassword = ({ email }: IProps) => {
     const [messageApi, contextHolder] = message.useMessage();
     const [loading, setLoading] = useState<boolean>(false);
+    const navigate = useNavigate()
 
     const errorAlert = (message: string) => {
         messageApi.open({
@@ -28,16 +30,19 @@ const ResetPassword = ({ email }: IProps) => {
     const onFinish = async (values: IResetPasswordForm) => {
         try {
             setLoading(true)
+            if (values.password !== values.confirmPassword) {
+                errorAlert('Passwords do not match');
+                setLoading(false)
+                return
+            }
             const payload = {
                 email,
                 password: values.password
             }
             const response = await resetPasswordAPI(payload)
             SuccessAlert(response.message)
-            if (values.password !== values.confirmPassword) {
-                errorAlert('Passwords do not match');
-            }
             setLoading(false)
+            navigate('/login')
         } catch (error: any) {
             errorAlert(error.message);
             setLoading(false)

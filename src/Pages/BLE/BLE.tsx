@@ -8,6 +8,7 @@ import { LinkOutlined, FormOutlined, CaretRightOutlined, StopOutlined } from '@a
 import { uploadAccFile, uploadCo2File } from './BLE.api';
 import { useNavigate } from "react-router-dom";
 import { baseUrl, onDemandCharUUID, readCharUUID, readServiceUUID, writeCharUUID, writeServiceUUID, writeValue } from '../../Constants/Constants';
+import Loader from '../../Components/Loader';
 
 const { Option } = Select;
 
@@ -22,6 +23,7 @@ const BLE: React.FC = () => {
     const [characteristicValue, setCharacteristicValue] = useState<Uint8Array>();
     const [finalData, setFinalData] = useState<Uint8Array>(new Uint8Array(0));
     const [loader, setLoader] = useState<boolean>(false)
+    const [Isprocessing, setIsProcessing] = useState<boolean>(false)
     const [seconds, setSeconds] = useState<number>(0)
     const [min, setMin] = React.useState<number>(0);
     const [sec, setSec] = React.useState<number>(0);
@@ -78,6 +80,7 @@ const BLE: React.FC = () => {
     };
 
     const stopTimer = async () => {
+        setIsProcessing(true)
         const audio = new Audio("/stop.wav")
         await audio.play()
         setLoader(false)
@@ -94,9 +97,12 @@ const BLE: React.FC = () => {
                 await uploadAccFile(token, baseUrl, device?.name ? device.name : "", startTimestamp, onDemandData)
                 if (graphData && bglData)
                     navigate("/report", { state: { graphData, bglData, startTimestamp, finalData, formData } });
+                setIsProcessing(false)
             }
+            setIsProcessing(false)
         } catch (error: any) {
             errorAlert(error.message)
+            setIsProcessing(false)
         }
     }
 
@@ -104,7 +110,7 @@ const BLE: React.FC = () => {
         if (seconds === 60)
             stopTimer()
         makeTimeForm(seconds);
-    }, [seconds, stopTimer]);
+    }, [seconds]);
 
 
 
@@ -192,6 +198,7 @@ const BLE: React.FC = () => {
     const readCharacteristic = async () => {
         try {
             setFinalData(new Uint8Array(0));
+            clearInterval(timer)
             await writeCharacteristic(writeValue)
             if (!device) {
                 console.error('No device connected');
@@ -257,6 +264,9 @@ const BLE: React.FC = () => {
 
 
     const startTimer = async () => {
+        if (timer) {
+            clearInterval(timer)
+        }
         setSeconds(0)
         setLoader(true)
         const intervalId = setInterval(async () => {
@@ -300,7 +310,9 @@ const BLE: React.FC = () => {
     //     link.click();
     // }
 
-
+    if (Isprocessing) {
+        return <Loader />
+    }
     return (
         <>
             {contextHolder}
@@ -417,7 +429,7 @@ const BLE: React.FC = () => {
                     </Form.Item>
 
                     <Form.Item label="Latest Weight ?" name={"latestWeight"} valuePropName="checked">
-                        <Switch />
+                        <Switch style={{ backgroundColor: "#83BF8D" }} />
                     </Form.Item>
 
                     <Form.Item label="Comments" name={"comments"}>
@@ -425,7 +437,7 @@ const BLE: React.FC = () => {
                     </Form.Item>
 
                     <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-                        <Button type="primary" htmlType="submit">
+                        <Button type="primary" htmlType="submit" style={{ backgroundColor: "#83BF8D" }}>
                             Submit
                         </Button>
                     </Form.Item>
