@@ -7,7 +7,8 @@ import TextArea from 'antd/es/input/TextArea';
 import { LinkOutlined, FormOutlined, CaretRightOutlined, StopOutlined } from '@ant-design/icons';
 import { uploadAccFile, uploadCo2File } from './BLE.api';
 import { useNavigate } from "react-router-dom";
-import { baseUrl, onDemandCharUUID, readCharUUID, readServiceUUID, token, writeCharUUID, writeServiceUUID, writeValue } from '../../Constants/Constants';
+import { baseUrl, onDemandCharUUID, readCharUUID, readServiceUUID, writeCharUUID, writeServiceUUID, writeValue } from '../../Constants/Constants';
+import Loader from '../../Components/Loader';
 
 const { Option } = Select;
 
@@ -22,6 +23,7 @@ const BLE: React.FC = () => {
     const [characteristicValue, setCharacteristicValue] = useState<Uint8Array>();
     const [finalData, setFinalData] = useState<Uint8Array>(new Uint8Array(0));
     const [loader, setLoader] = useState<boolean>(false)
+    const [Isprocessing, setIsProcessing] = useState<boolean>(false)
     const [seconds, setSeconds] = useState<number>(0)
     const [min, setMin] = React.useState<number>(0);
     const [sec, setSec] = React.useState<number>(0);
@@ -77,6 +79,32 @@ const BLE: React.FC = () => {
         }
     };
 
+    const stopTimer = async () => {
+        setIsProcessing(true)
+        const audio = new Audio("/stop.wav")
+        await audio.play()
+        setLoader(false)
+        clearInterval(timer)
+        try {
+            if (formData) {
+                const token = localStorage.getItem('token')
+                if (!token) {
+                    errorAlert("Please login first")
+                    navigate("/login")
+                    return
+                }
+                const { graphData, bglData } = await uploadCo2File(finalData, baseUrl, token, device?.name ? device.name : "", startTimestamp, formData)
+                await uploadAccFile(token, baseUrl, device?.name ? device.name : "", startTimestamp, onDemandData)
+                if (graphData && bglData)
+                    navigate("/report", { state: { graphData, bglData, startTimestamp, finalData, formData } });
+                setIsProcessing(false)
+            }
+            setIsProcessing(false)
+        } catch (error: any) {
+            errorAlert(error.message)
+            setIsProcessing(false)
+        }
+    }
 
     useEffect((): void => {
         if (seconds === 60)
@@ -168,21 +196,22 @@ const BLE: React.FC = () => {
 
 
     const readCharacteristic = async () => {
-        const audio = new Audio("/start.wav")
-        await audio.play()
-        setFinalData(new Uint8Array(0));
-        await writeCharacteristic(writeValue)
-        if (!device) {
-            console.error('No device connected');
-            errorAlert("Please connect a device first");
-            return;
-        }
-        if (!formData) {
-            console.error('Please enter subject details first');
-            errorAlert("Please enter subject details first")
-            return;
-        }
         try {
+            setFinalData(new Uint8Array(0));
+            clearInterval(timer)
+            await writeCharacteristic(writeValue)
+            if (!device) {
+                console.error('No device connected');
+                errorAlert("Please connect a device first");
+                return;
+            }
+            if (!formData) {
+                console.error('Please enter subject details first');
+                errorAlert("Please enter subject details first")
+                return;
+            }
+            const audio = new Audio("/start.wav")
+            await audio.play()
             if (service) {
                 try {
                     setStartTimestamp("")
@@ -232,24 +261,12 @@ const BLE: React.FC = () => {
         })
     }
 
-    const stopTimer = async () => {
-        const audio = new Audio("/stop.wav")
-        await audio.play()
-        setLoader(false)
-        clearInterval(timer)
-        try {
-            if (formData) {
-                const { graphData, bglData } = await uploadCo2File(finalData, baseUrl, token, device?.name ? device.name : "", startTimestamp, formData)
-                uploadAccFile(token, baseUrl, device?.name ? device.name : "", startTimestamp, onDemandData)
-                if (graphData && bglData)
-                    navigate("/report", { state: { graphData, bglData, startTimestamp, finalData, formData } });
-            }
-        } catch (error: any) {
-            errorAlert(error.message)
-        }
-    }
+
 
     const startTimer = async () => {
+        if (timer) {
+            clearInterval(timer)
+        }
         setSeconds(0)
         setLoader(true)
         const intervalId = setInterval(async () => {
@@ -293,13 +310,14 @@ const BLE: React.FC = () => {
     //     link.click();
     // }
 
-
+    if (Isprocessing) {
+        return <Loader />
+    }
     return (
         <>
             {contextHolder}
-
-            <Title>New Breath Sample</Title>
-            <Title level={3}> Get your metabolic profile </Title>
+            <Title style={{ color: "#205274", fontFamily: "'Poppins', sans-serif" }}>New Breath Sample</Title>
+            <Title style={{ fontFamily: "'Poppins', sans-serif" }} level={3}> Get your metabolic profile </Title>
             <div className="button-container">
 
                 <Button style={{ backgroundColor: "#83BF8D" }} type="primary" icon={<LinkOutlined />} onClick={connectToDevice}>Connect to Device</Button>
@@ -411,7 +429,7 @@ const BLE: React.FC = () => {
                     </Form.Item>
 
                     <Form.Item label="Latest Weight ?" name={"latestWeight"} valuePropName="checked">
-                        <Switch />
+                        <Switch style={{ backgroundColor: "#83BF8D" }} />
                     </Form.Item>
 
                     <Form.Item label="Comments" name={"comments"}>
@@ -419,7 +437,7 @@ const BLE: React.FC = () => {
                     </Form.Item>
 
                     <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-                        <Button type="primary" htmlType="submit">
+                        <Button type="primary" htmlType="submit" style={{ backgroundColor: "#83BF8D" }}>
                             Submit
                         </Button>
                     </Form.Item>
