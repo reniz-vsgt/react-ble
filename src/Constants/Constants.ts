@@ -11,3 +11,4 @@ export const googleOAuth2LoginRedirectUrl = process.env.REACT_APP_SOCIAL_AUTH_LO
 export const validationUrl = process.env.REACT_APP_VALIODATION_URL ? process.env.REACT_APP_VALIODATION_URL : ""
 export const googleAuthUrl = 'https://accounts.google.com/o/oauth2/v2/auth'
 export const VERSION = "v1"
+export const OTP_EXPIRY_TIME = 300

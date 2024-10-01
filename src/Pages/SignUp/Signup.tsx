@@ -65,25 +65,25 @@ const Signup: React.FC = () => {
                             name="username"
                             rules={[{ required: true, message: 'Please input your Username!' }]}
                         >
-                            <Input prefix={<UserOutlined style={{color: "#83BF8D"}}/>} placeholder="Username" />
+                            <Input prefix={<UserOutlined style={{ color: "#83BF8D" }} />} placeholder="Username" />
                         </Form.Item>
                         <Form.Item
                             name="email"
                             rules={[{ required: true, message: 'Please input your Email!' }]}
                         >
-                            <Input type='email' prefix={<MailOutlined style={{color: "#83BF8D"}}/>} placeholder="Email" />
+                            <Input type='email' prefix={<MailOutlined style={{ color: "#83BF8D" }} />} placeholder="Email" />
                         </Form.Item>
                         <Form.Item
                             name="password"
                             rules={[{ required: true, message: 'Please input your Password!' }]}
                         >
-                            <Input.Password prefix={<LockOutlined style={{color: "#83BF8D"}}    />} placeholder="Password" />
+                            <Input.Password prefix={<LockOutlined style={{ color: "#83BF8D" }} />} placeholder="Password" />
                         </Form.Item>
                         <Form.Item
                             name="confirmPassword"
                             rules={[{ required: true, message: 'Please input your Confirm Password!' }]}
                         >
-                            <Input.Password prefix={<LockOutlined style={{color: "#83BF8D"}}/>} placeholder="Confirm Password" />
+                            <Input.Password prefix={<LockOutlined style={{ color: "#83BF8D" }} />} placeholder="Confirm Password" />
                         </Form.Item>
                         <Form.Item>
                             <Button type="primary" htmlType="submit" style={{ width: '100%', backgroundColor: "#83BF8D" }}>

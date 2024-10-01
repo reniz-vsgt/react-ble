@@ -1,8 +1,9 @@
-export interface IForgotPassword {
+export interface ISendOTP {
+    email: string
+}
+export interface IVerifyOTP {
     email: string
     otp: string
-    password: string
-    confirmPassword: string
 }
 
 export interface IForgotPasswordResponse {

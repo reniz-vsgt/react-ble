@@ -1,7 +1,7 @@
 import { baseUrl } from "../../Constants/Constants";
-import { IForgotPassword, IForgotPasswordResponse } from "./ForgotPassword.interface";
+import { ISendOTP, IForgotPasswordResponse, IVerifyOTP } from "./ForgotPassword.interface";
 
-export const sendOTP = async (email: IForgotPassword): Promise<IForgotPasswordResponse> => {
+export const sendOTP = async (email: ISendOTP): Promise<IForgotPasswordResponse> => {
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
     myHeaders.append("Accept", "application/json");
@@ -21,7 +21,7 @@ export const sendOTP = async (email: IForgotPassword): Promise<IForgotPasswordRe
 }
 
 
-export const verifyOTP = async (payload: IForgotPassword): Promise<IForgotPasswordResponse> => {
+export const verifyOTP = async (payload: IVerifyOTP): Promise<IForgotPasswordResponse> => {
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
     myHeaders.append("Accept", "application/json");

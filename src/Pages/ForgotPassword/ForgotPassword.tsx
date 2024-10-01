@@ -3,8 +3,10 @@ import { Form, Input, Button, Typography, Card, message } from 'antd';
 import { MailOutlined } from '@ant-design/icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLock } from '@fortawesome/free-solid-svg-icons';
-import { IForgotPassword } from './ForgotPassword.interface';
 import { sendOTP, verifyOTP } from './ForgotPassword.api';
+import { Timer } from '../../Components/Timer';
+import { OTP_EXPIRY_TIME } from '../../Constants/Constants';
+import ResetPassword from '../ResetPassword/ResetPassword';
 
 const { Title, Text } = Typography;
 
@@ -12,6 +14,9 @@ const ForgotPassword: React.FC = () => {
     const [messageApi, contextHolder] = message.useMessage();
     const [loading, setLoading] = useState<boolean>(false);
     const [isOTPSent, setIsOTPSent] = useState<boolean>(false);
+    const [email, setEmail] = useState<string>("");
+    const [otp, setOtp] = useState<string>("");
+    const [iaValidOTP, setIsValidOTP] = useState<boolean>(false)
 
 
     const errorAlert = (message: string) => {
@@ -26,37 +31,44 @@ const ForgotPassword: React.FC = () => {
             content: message,
         });
     };
-    const onFinish = async (values: any) => {
-        console.log("onFinish", values);
+    const sendOTPFE = async () => {
+        try {
+            setLoading(true)
+            const sendOTPResponse = await sendOTP({ email: email })
+            SuccessAlert(sendOTPResponse.message)
+            setIsOTPSent(true)
+            setLoading(false)
+        } catch (error: any) {
+            console.error(error.message)
+            errorAlert(error.message)
+            setLoading(false)
+        }
+    }
+    const verifyOTPFE = async () => {
         setLoading(true);
-        if (!isOTPSent) {
-            try {
-                console.log("sendOTP", values);
-                
-                const sendOTPResponse = await sendOTP(values)
-                SuccessAlert(sendOTPResponse.message)
-                setIsOTPSent(true)
-            } catch (error: any) {
-                console.error(error.message)
-                errorAlert(error.message)
-                setIsOTPSent(false)
-            }
+        try {
+            const verifyOTPResponse = await verifyOTP({ email: email, otp: otp })
+            SuccessAlert(verifyOTPResponse.message)
+            setIsValidOTP(true)
+        } catch (error: any) {
+            console.error(error.message)
+            errorAlert(error.message)
         }
-        else {
-            console.log(values, "--------> values verify");
-            try {
-                const verifyOTPResponse = await verifyOTP(values)
-                SuccessAlert(verifyOTPResponse.message)
-            } catch (error: any) {
-                console.error(error.message)
-                errorAlert(error.message)
-            }
-        }
+
         setLoading(false);
     };
 
+    const handleOtpExpired = () => {
+        errorAlert("OTP Expired!!")
+        setIsOTPSent(false)
+    }
+
+    if (iaValidOTP) {
+        return <ResetPassword email={email} />
+    }
+
     return (
-        <div style={{ display: 'flex', justifyContent: 'center', height:'100%' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', height: '100%' }}>
             {contextHolder}
             <Card style={{ width: '100%', boxShadow: '0 4px 8px rgba(0,0,0,0.1)', maxWidth: 400 }}>
                 <div style={{ textAlign: 'center', marginBottom: 24 }}>
@@ -66,7 +78,6 @@ const ForgotPassword: React.FC = () => {
                 </div>
                 <Form
                     name="forgot-password"
-                    onFinish={onFinish}
                     layout="vertical"
                 >
                     <Form.Item
@@ -76,18 +87,51 @@ const ForgotPassword: React.FC = () => {
                             { type: 'email', message: 'Please enter a valid email address' }
                         ]}
                     >
-                        <Input prefix={<MailOutlined style={{ color: "#83BF8D" }} />} placeholder="Email" size="large" />
+                        <Input
+                            onChange={(e) => setEmail(e.target.value)}
+                            prefix={<MailOutlined style={{ color: "#83BF8D" }} />}
+                            placeholder="Email"
+                            size="large" />
                     </Form.Item>
                     <Form.Item hidden={isOTPSent}>
-                        <Button style={{ backgroundColor: "#83BF8D" }} icon={<FontAwesomeIcon icon={faLock} style={{ color: "#ffffff" }} />} type="primary" htmlType="submit" loading={loading} block size="large">
+                        <Button
+                            onClick={sendOTPFE}
+                            style={{ backgroundColor: "#83BF8D" }}
+                            icon={<FontAwesomeIcon icon={faLock} style={{ color: "#ffffff" }} />}
+                            type="primary"
+                            loading={loading}
+                            block size="large">
                             Send OTP
                         </Button>
                     </Form.Item>
-                    <Form.Item hidden={!isOTPSent} name="otp" rules={[{ required: true, message: 'Please input your OTP!' }]}>
-                        <Input prefix={<FontAwesomeIcon icon={faLock} style={{ color: "#83BF8D" }} />} placeholder="OTP" size="large" />
+
+                    <Form.Item
+                        hidden={!isOTPSent}
+                        name="otp"
+                        rules={[{ required: true, message: 'Please input your OTP!' }]}>
+                        <Input
+                            onChange={(e) => setOtp(e.target.value)}
+                            prefix={<FontAwesomeIcon icon={faLock} style={{ color: "#83BF8D" }} />}
+                            placeholder="OTP" size="large" />
                     </Form.Item>
+                    {isOTPSent && (
+                        <Form.Item>
+                            <div style={{ textAlign: 'center', marginBottom: '10px' }}>
+                                <Text type="secondary">
+                                    OTP expires in: <Timer initialTime={OTP_EXPIRY_TIME} onExpire={handleOtpExpired} />
+                                </Text>
+                            </div>
+                        </Form.Item>
+                    )}
                     <Form.Item hidden={!isOTPSent}>
-                        <Button style={{ backgroundColor: "#83BF8D" }} icon={<FontAwesomeIcon icon={faLock} style={{ color: "#ffffff" }} />} type="primary" htmlType="submit" loading={loading} block size="large">
+                        <Button
+                            onClick={verifyOTPFE}
+                            style={{ backgroundColor: "#83BF8D" }}
+                            icon={<FontAwesomeIcon icon={faLock} style={{ color: "#ffffff" }} />}
+                            type="primary"
+                            loading={loading}
+                            block
+                            size="large">
                             Verify OTP
                         </Button>
                     </Form.Item>

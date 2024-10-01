@@ -77,12 +77,34 @@ const BLE: React.FC = () => {
         }
     };
 
+    const stopTimer = async () => {
+        const audio = new Audio("/stop.wav")
+        await audio.play()
+        setLoader(false)
+        clearInterval(timer)
+        try {
+            if (formData) {
+                const token = localStorage.getItem('token')
+                if (!token) {
+                    errorAlert("Please login first")
+                    navigate("/login")
+                    return
+                }
+                const { graphData, bglData } = await uploadCo2File(finalData, baseUrl, token, device?.name ? device.name : "", startTimestamp, formData)
+                await uploadAccFile(token, baseUrl, device?.name ? device.name : "", startTimestamp, onDemandData)
+                if (graphData && bglData)
+                    navigate("/report", { state: { graphData, bglData, startTimestamp, finalData, formData } });
+            }
+        } catch (error: any) {
+            errorAlert(error.message)
+        }
+    }
 
     useEffect((): void => {
         if (seconds === 60)
             stopTimer()
         makeTimeForm(seconds);
-    }, [seconds]);
+    }, [seconds, stopTimer]);
 
 
 
@@ -232,28 +254,7 @@ const BLE: React.FC = () => {
         })
     }
 
-    const stopTimer = async () => {
-        const audio = new Audio("/stop.wav")
-        await audio.play()
-        setLoader(false)
-        clearInterval(timer)
-        try {
-            if (formData) {
-                const token = localStorage.getItem('token')
-                if (!token) {
-                    errorAlert("Please login first")
-                    navigate("/login")
-                    return
-                }
-                const { graphData, bglData } = await uploadCo2File(finalData, baseUrl, token, device?.name ? device.name : "", startTimestamp, formData)
-                await uploadAccFile(token, baseUrl, device?.name ? device.name : "", startTimestamp, onDemandData)
-                if (graphData && bglData)
-                    navigate("/report", { state: { graphData, bglData, startTimestamp, finalData, formData } });
-            }
-        } catch (error: any) {
-            errorAlert(error.message)
-        }
-    }
+
 
     const startTimer = async () => {
         setSeconds(0)
