@@ -8,6 +8,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import { MedicalReport } from './ReportPdf';
 import { IReportProps } from './Report.interface';
+import HrGraph from '../../Components/HrGraph';
 
 
 
@@ -82,6 +83,11 @@ const Report = () => {
             label: 'Breath Temperature',
             children: <Graph x={graphData?.payload?.ticks} y={graphData?.payload?.temp} />,
         },
+        {
+            key: '4',
+            label: 'HR and HRV',
+            children: <HrGraph data={graphData?.payload.graphData}/>,
+        },
     ];
 
 
@@ -114,6 +120,8 @@ const Report = () => {
         eeCalPerMin: graphData.payload.gluocose_data.EE_cal_per_min,
         glucoseUtilized: graphData.payload.gluocose_data.Glucose_utilise_mg_per_min,
         percentCaloriesFromGlucose: graphData.payload.gluocose_data.percentage_calories_from_glucose,
+        hr: (graphData.payload.gluocose_data.hr).toFixed(0),
+        hrv: (graphData.payload.gluocose_data.hrv).toFixed(0),
     };
 
 
@@ -160,6 +168,15 @@ const Report = () => {
                                     <Card size="small" title="EE cal per min" >
                                         <p>{formatter((graphData['payload']['gluocose_data']['EE_cal_per_min']).toFixed(2))}</p>
                                     </Card>
+                                    <Card size="small" title="Heart Rate" >
+                                        <p>{formatter((graphData['payload']['gluocose_data']['hr']).toFixed(2))}</p>
+                                    </Card>
+                                    <Card size="small" title="Heart Rate Variability" >
+                                        <p>{formatter((graphData['payload']['gluocose_data']['hrv']).toFixed(2))}</p>
+                                    </Card>
+                                    {/* <Card size="small" title="Breath Rate" >
+                                        <p>{formatter((graphData['payload']['gluocose_data']['br']).toFixed(2))}</p>
+                                    </Card> */}
                                 </div>
                                 <br />
                                 <Tabs defaultActiveKey="1" items={items} />

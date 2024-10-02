@@ -7,6 +7,9 @@ export interface IGluocoseData{
     percentage_calories_from_glucose : number
     range1 : number
     range2 : number
+    hr : number
+    hrv : number
+    br : number
 
 }
 export interface IPayload{
@@ -15,6 +18,8 @@ export interface IPayload{
     humidity : number[]
     temp : number[]
     ticks : number[]
+    graphData : []
+
 }
 export interface IGraphData{
     message : string
