@@ -80,6 +80,8 @@ const BLE: React.FC = () => {
     };
 
     const stopTimer = async () => {
+        await device?.gatt?.disconnect()
+        setDevice(null)
         setIsProcessing(true)
         const audio = new Audio("/stop.wav")
         await audio.play()
@@ -95,14 +97,14 @@ const BLE: React.FC = () => {
                 }
                 const { graphData, bglData } = await uploadCo2File(finalData, baseUrl, token, device?.name ? device.name : "", startTimestamp, formData)
                 await uploadAccFile(token, baseUrl, device?.name ? device.name : "", startTimestamp, onDemandData)
+                setIsProcessing(false)
                 if (graphData && bglData)
                     navigate("/report", { state: { graphData, bglData, startTimestamp, finalData, formData } });
-                setIsProcessing(false)
             }
             setIsProcessing(false)
         } catch (error: any) {
-            errorAlert(error.message)
             setIsProcessing(false)
+            errorAlert(error.message)
         }
     }
 

@@ -136,6 +136,14 @@ export const MedicalReport = ({ data }: any) => (
                     <Text style={styles.tableCol}>Percentage Calories from Glucose</Text>
                     <Text style={styles.tableCol}>{data.percentCaloriesFromGlucose}%</Text>
                 </View>
+                <View style={styles.tableRow}>
+                    <Text style={styles.tableCol}>Heart Rate</Text>
+                    <Text style={styles.tableCol}>{data.hr}</Text>
+                </View>
+                <View style={styles.tableRow}>
+                    <Text style={styles.tableCol}>Heart Rate Variability</Text>
+                    <Text style={styles.tableCol}>{data.hrv}</Text>
+                </View>
             </View>
 
             <Text style={styles.footer}>Generated on {data.startTime}</Text>
