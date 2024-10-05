@@ -7,20 +7,15 @@ const Graph: React.FC<any> = ({
 
     return (
         <>
-            <div style={{overflow:'scroll'}}>
+            <div style={{ overflow: 'scroll' }}>
                 <LineChart
                     className='Graph'
-                    xAxis={[{ data: x, label: "Ticks" }]}
-                    series={[
-                        {
-                            data: y,
-                            showMark: false,
-                        },
-                    ]}
+                    xAxis={x}
+                    series={y}
                     height={200}
                     width={400}
-                    margin={{ left: 35, right: 30, top: 30, bottom: 60 }}
-                    grid={{ vertical: true, horizontal: true }}
+                    // margin={{ left: 35, right: 30, top: 50, bottom: 60 }}
+                    grid={{ vertical: false, horizontal: true }}
                 />
             </div>
         </>

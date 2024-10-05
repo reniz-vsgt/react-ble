@@ -32,8 +32,8 @@ const Login: React.FC = () => {
 
     useEffect(() => {
         if (googleRes) {
-            localStorage.setItem('isLoggedIn', 'true')
-            localStorage.setItem('token', googleRes.payload.token)
+            localStorage.setItem('isVSGTLoggedIn', 'true')
+            localStorage.setItem('VSGTtoken', googleRes.payload.token)
             SuccessAlert(googleRes.message)
             navigate('/record');
         }
@@ -44,8 +44,8 @@ const Login: React.FC = () => {
             setLoading(true)
             const response = await login(values)
             if (response.status === 200) {
-                localStorage.setItem('isLoggedIn', 'true')
-                localStorage.setItem('token', response.payload.token)
+                localStorage.setItem('isVSGTLoggedIn', 'true')
+                localStorage.setItem('VSGTtoken', response.payload.token)
             }
             setLoading(false)
             SuccessAlert(response.message)

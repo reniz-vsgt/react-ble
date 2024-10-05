@@ -4,12 +4,6 @@ export interface IBleProps {
   env: string
 }
 
-export interface IBglValues {
-  range1: number,
-  range2: number,
-  BGL: number
-}
-
 
 export interface IFormData {
   subjectId: string

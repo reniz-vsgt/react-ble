@@ -92,13 +92,13 @@ const styles = StyleSheet.create({
     },
 });
 
-export const MedicalReport = ({ data }: any) => (
+export const MedicalReport = ({ data, parameters, bgl }: any) => (
     <Document>
         <Page size="A4" style={styles.page}>
             <View style={styles.headerContainer}>
                 <View style={styles.companyDetails}>
                     <Text style={styles.companyName}>Breath AI</Text>
-                    <Text>Your Metabolic Profile Report </Text>
+                    <Text>Your {data.title} Profile Report </Text>
                 </View>
             </View>
 
@@ -117,33 +117,22 @@ export const MedicalReport = ({ data }: any) => (
                     <Text style={styles.tableColHeader}>Parameter</Text>
                     <Text style={styles.tableColHeader}>Value</Text>
                 </View>
-                <View style={styles.tableRow}>
-                    <Text style={styles.tableCol}>Estimated Blood Glucose Level</Text>
-                    <View style={styles.tableCol}>
-                        <Text>{data.bloodGlucose} mg/dL</Text>
-                        <Text style={styles.smallText}>(Your estimated range: {data.glucoseRange.lower} - {data.glucoseRange.upper} mg/dL)</Text>
+                {bgl && (
+                    <View style={styles.tableRow}>
+                        <Text style={styles.tableCol}>{bgl.name}</Text>
+                        <View style={styles.tableCol}>
+                            <Text>{bgl.bgl} {bgl.unit}</Text>
+                            <Text style={styles.smallText}>(Your estimated range: {bgl.range1} - {bgl.range2} {bgl.unit})</Text>
+                        </View>
                     </View>
-                </View>
-                <View style={styles.tableRow}>
-                    <Text style={styles.tableCol}>EE Cal per Minute</Text>
-                    <Text style={styles.tableCol}>{data.eeCalPerMin} cal/min</Text>
-                </View>
-                <View style={styles.tableRow}>
-                    <Text style={styles.tableCol}>Glucose Utilized</Text>
-                    <Text style={styles.tableCol}>{data.glucoseUtilized} mg/min</Text>
-                </View>
-                <View style={styles.tableRow}>
-                    <Text style={styles.tableCol}>Percentage Calories from Glucose</Text>
-                    <Text style={styles.tableCol}>{data.percentCaloriesFromGlucose}%</Text>
-                </View>
-                <View style={styles.tableRow}>
-                    <Text style={styles.tableCol}>Heart Rate</Text>
-                    <Text style={styles.tableCol}>{data.hr}</Text>
-                </View>
-                <View style={styles.tableRow}>
-                    <Text style={styles.tableCol}>Heart Rate Variability</Text>
-                    <Text style={styles.tableCol}>{data.hrv}</Text>
-                </View>
+                )}
+
+                {parameters.map((parameter: any) => (
+                    <View style={styles.tableRow}>
+                        <Text style={styles.tableCol}>{parameter.name}</Text>
+                        <Text style={styles.tableCol}>{parameter.value} {parameter.unit}</Text>
+                    </View>
+                ))}
             </View>
 
             <Text style={styles.footer}>Generated on {data.startTime}</Text>

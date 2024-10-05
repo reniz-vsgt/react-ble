@@ -5,7 +5,7 @@ import { cardio } from 'ldrs'
 import './BLE.css'
 import TextArea from 'antd/es/input/TextArea';
 import { LinkOutlined, FormOutlined, CaretRightOutlined, StopOutlined } from '@ant-design/icons';
-import { uploadAccFile, uploadCo2File } from './BLE.api';
+import { uploadAccFile, uploadFile } from './BLE.api';
 import { useNavigate } from "react-router-dom";
 import { baseUrl, onDemandCharUUID, readCharUUID, readServiceUUID, writeCharUUID, writeServiceUUID, writeValue } from '../../Constants/Constants';
 import Loader from '../../Components/Loader';
@@ -16,7 +16,7 @@ cardio.register()
 
 const { Title } = Typography;
 
-const BLE: React.FC = () => {
+const BLE = ({ sampleType }: { sampleType: string }) => {
     const [messageApi, contextHolder] = message.useMessage();
 
     const [device, setDevice] = useState<BluetoothDevice | null>(null);
@@ -28,7 +28,10 @@ const BLE: React.FC = () => {
     const [min, setMin] = React.useState<number>(0);
     const [sec, setSec] = React.useState<number>(0);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [switchOn, setSwitchOn] = useState(false);
+    const [IsStarted, setIsStarted] = useState(false);
     const [onDemandData, setOnDemandData] = useState<string[][]>([]);
+    const [battery, setBattery] = useState<number>(0);
 
 
     const [service, setService] = useState<BluetoothRemoteGATTServer | undefined>();
@@ -80,26 +83,37 @@ const BLE: React.FC = () => {
     };
 
     const stopTimer = async () => {
-        await device?.gatt?.disconnect()
-        setDevice(null)
         setIsProcessing(true)
+        setIsStarted(false)
         const audio = new Audio("/stop.wav")
         await audio.play()
         setLoader(false)
         clearInterval(timer)
+        setDevice(null)
+        device?.gatt?.disconnect()
         try {
             if (formData) {
-                const token = localStorage.getItem('token')
+                const token = localStorage.getItem('VSGTtoken')
                 if (!token) {
                     errorAlert("Please login first")
                     navigate("/login")
                     return
                 }
-                const { graphData, bglData } = await uploadCo2File(finalData, baseUrl, token, device?.name ? device.name : "", startTimestamp, formData)
-                await uploadAccFile(token, baseUrl, device?.name ? device.name : "", startTimestamp, onDemandData)
-                setIsProcessing(false)
-                if (graphData && bglData)
-                    navigate("/report", { state: { graphData, bglData, startTimestamp, finalData, formData } });
+                if (sampleType === "Metabolic") {
+                    const { parameters, graphData, bgl } = await uploadFile("Co2", finalData, baseUrl, token, device?.name ? device.name : "", startTimestamp, formData)
+                    await uploadAccFile(token, baseUrl, device?.name ? device.name : "", startTimestamp, onDemandData)
+                    setIsProcessing(false)
+                    if (parameters && bgl && graphData)
+                        navigate("/report", { state: { parameters, bgl, graphData, startTimestamp, formData, title: sampleType } });
+                }
+                else {
+                    const { parameters, graphData, bgl } = await uploadFile("PPG", finalData, baseUrl, token, device?.name ? device.name : "", startTimestamp, formData)
+                    await uploadAccFile(token, baseUrl, device?.name ? device.name : "", startTimestamp, onDemandData)
+                    setIsProcessing(false)
+                    if (parameters)
+                        navigate("/report", { state: { parameters, bgl: null, graphData: null, startTimestamp, formData, title: sampleType } });
+                }
+
             }
             setIsProcessing(false)
         } catch (error: any) {
@@ -167,6 +181,14 @@ const BLE: React.FC = () => {
             const onDemandChar = await writeService.getCharacteristic(onDemandCharUUID);
             setOnDemandChar(onDemandChar)
 
+            onDemandChar?.readValue().then((val: any) => {
+                const data = new Uint8Array(val?.buffer || new ArrayBuffer(0));
+                const arrayData = uint8ArrayToArray(data)
+                const bg_volts = (Number(arrayData[1]) * 4 * 4.88) / 1000
+                const battery = ((100 * (bg_volts - 4.2)) / 1.1) + 100
+                setBattery(battery)
+            })
+
         } catch (error) {
             console.error('Failed to connect:', error);
         }
@@ -186,7 +208,6 @@ const BLE: React.FC = () => {
                     uint8[index] = parseInt(newValue[index]);
                 }
                 await writeChar?.writeValue(uint8);
-                console.log("Value Written successfully!!!");
             }
 
         } catch (error) {
@@ -269,6 +290,7 @@ const BLE: React.FC = () => {
         if (timer) {
             clearInterval(timer)
         }
+        setIsStarted(true)
         setSeconds(0)
         setLoader(true)
         const intervalId = setInterval(async () => {
@@ -301,33 +323,28 @@ const BLE: React.FC = () => {
         setIsModalOpen(true)
     }
 
-    // function downloadOnDemand() {
-    //     const fileName = `${startTimestamp}_${formData?.subjectId}_onDemand.csv`
-    //     let csvContent = "data:text/csv;charset=utf-8," + onDemandData.join("\n");
-    //     var encodedUri = encodeURI(csvContent);
-    //     var link = document.createElement("a");
-    //     link.setAttribute("href", encodedUri);
-    //     link.setAttribute("download", fileName);
-    //     document.body.appendChild(link);
-    //     link.click();
-    // }
-
     if (Isprocessing) {
         return <Loader />
     }
     return (
         <>
             {contextHolder}
+            <br />
             <Title style={{ color: "#205274", fontFamily: "'Poppins', sans-serif" }}>New Breath Sample</Title>
-            <Title style={{ fontFamily: "'Poppins', sans-serif" }} level={3}> Get your metabolic profile </Title>
+            <Title style={{ fontFamily: "'Poppins', sans-serif" }} level={3}> Get your {sampleType} profile </Title>
             <div className="button-container">
+                {device ? (<></>) : (
+                    <Button style={{ backgroundColor: "#83BF8D" }} type="primary" icon={<LinkOutlined />} onClick={connectToDevice}>Connect to Device</Button>
+                )}
 
-                <Button style={{ backgroundColor: "#83BF8D" }} type="primary" icon={<LinkOutlined />} onClick={connectToDevice}>Connect to Device</Button>
                 {device != null ? (
                     <>
                         <Button style={{ backgroundColor: "#83BF8D" }} type="primary" icon={<FormOutlined />} onClick={fillForm}>Enter Details</Button>
-                        <Button style={{ backgroundColor: "#83BF8D" }} type="primary" icon={<CaretRightOutlined />} onClick={readCharacteristic}>Start</Button>
-                        <Button style={{ backgroundColor: "#83BF8D" }} type="primary" icon={<StopOutlined />} onClick={stopTimer}>Stop</Button>
+                        {IsStarted ? (
+                            <Button style={{ backgroundColor: "#83BF8D" }} type="primary" icon={<StopOutlined />} onClick={stopTimer} disabled={!IsStarted}>Stop</Button>
+                        ) : (
+                            <Button style={{ backgroundColor: "#83BF8D" }} type="primary" icon={<CaretRightOutlined />} onClick={readCharacteristic} disabled={IsStarted}>Start</Button>
+                        )}
                         <br />
 
                     </>
@@ -336,7 +353,25 @@ const BLE: React.FC = () => {
             <br />
             <br />
             <Space wrap={true} size="large">
-                {device && <p>Connected to device: {device.name}</p>}
+                {
+                    device &&
+                    <>
+                        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                            <p>Connected to device: <b> {device.name}</b> </p>
+                            {
+                                battery > 0 && (
+                                    <div style={{ display: "flex", alignItems: "center", gap: "1px" }}>
+                                        <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#83BF8D"><path d="m402.67-187.33 255-306H484.33L518-759.67l-230.33 333h149l-34 239.34ZM320-80l40-280H160l360-520h80l-40 320h240L400-80h-80Zm153-394Z" /></svg>
+                                        <p>{battery ? `${battery.toFixed(0)}%` : ""}</p>
+                                    </div>
+                                )
+                            }
+
+                        </div>
+
+                    </>
+
+                }
 
             </Space>
             {loader ? (
@@ -431,7 +466,9 @@ const BLE: React.FC = () => {
                     </Form.Item>
 
                     <Form.Item label="Latest Weight ?" name={"latestWeight"} valuePropName="checked">
-                        <Switch style={{ backgroundColor: "#83BF8D" }} />
+                        <Switch
+                            onChange={() => setSwitchOn(!switchOn)}
+                            style={switchOn ? { backgroundColor: "#d3d3d3" } : { backgroundColor: "#83BF8D" }} />
                     </Form.Item>
 
                     <Form.Item label="Comments" name={"comments"}>
@@ -451,5 +488,3 @@ const BLE: React.FC = () => {
 };
 
 export default BLE;
-
-

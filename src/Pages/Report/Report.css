@@ -10,9 +10,10 @@
 
 .data-container {
     display: flex;
-    gap: 5px;
+    gap: 10px;
     justify-content: space-evenly;
-    overflow: scroll;
+    flex-wrap: wrap;
+    margin-top: 15px;
 }
 
 .button-container {
@@ -20,4 +21,16 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
+}
+
+.card-title{
+    margin-top: 0px;
+    padding-top: 10px;
+}
+
+.data-card{
+    height: 120px;
+    width: 120px;
+    border: 0.1px solid #83BF8D;
+    border-radius: 10px;
 }

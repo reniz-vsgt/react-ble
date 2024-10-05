@@ -1,5 +1,4 @@
 import { Layout, Typography } from 'antd';
-import BLE from '../BLE/BLE';
 import Report from '../Report/Report'
 import React from 'react';
 import './App.css'
@@ -8,15 +7,16 @@ import Login from '../Login/Login';
 import PageNotFound from '../PageNotFound/PageNotFound';
 import Signup from '../SignUp/Signup';
 import ForgotPassword from '../ForgotPassword/ForgotPassword';
+import Record from '../Record/Record';
 
 
 const { Content, Header } = Layout;
 const { Title } = Typography;
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+  const isVSGTLoggedIn = localStorage.getItem('isVSGTLoggedIn') === 'true';
 
-  if (!isLoggedIn) {
+  if (!isVSGTLoggedIn) {
     return <Navigate to="/login" replace />;
   }
 
@@ -44,7 +44,7 @@ function App() {
                 <Route path='/signup' element={<Signup />} />
                 <Route path='/record' element={
                   <ProtectedRoute>
-                    <BLE />
+                    <Record />
                   </ProtectedRoute>
                 } />
                 <Route path="/report" element={

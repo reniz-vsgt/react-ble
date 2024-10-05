@@ -1,36 +1,43 @@
-import { IBglValues, IFormData } from "../BLE/BLE.types"
+import { IFormData } from "../BLE/BLE.types"
 
-export interface IGluocoseData{
-    BGL : number
-    EE_cal_per_min : number
-    Glucose_utilise_mg_per_min : number
-    percentage_calories_from_glucose : number
-    range1 : number
-    range2 : number
-    hr : number
-    hrv : number
-    br : number
-
-}
-export interface IPayload{
-    co2_percentage : number[]
-    gluocose_data : IGluocoseData
-    humidity : number[]
-    temp : number[]
-    ticks : number[]
-    graphData : []
-
-}
-export interface IGraphData{
-    message : string
-    payload : IPayload
-    status : number
+export interface IBglValues {
+    range1: number,
+    range2: number,
+    bgl: number,
+    unit: string,
+    name: string
 }
 
-export interface IReportProps{
-    graphData : IGraphData,
-    bglData : IBglValues
-    startTimestamp : string
-    finalData : Uint8Array
-    formData : IFormData
+export interface IParameters {
+    name: string
+    value: number
+    unit: string
+}
+
+export interface IXAxis {
+    data: number[]
+    scaleType: string
+    label: string
+}
+
+
+export interface IYAxis {
+    data: number[]
+    label: string
+    showMark: boolean
+}
+
+export interface IGraphData {
+    label: string
+    xAxis: IXAxis[]
+    yAxis: IYAxis[]
+}
+
+export interface IReportProps {
+    parameters: IParameters[]
+    graphData: IGraphData[] | null
+    bgl: IBglValues | null
+    startTimestamp: string
+    formData: IFormData
+    title: string
 }

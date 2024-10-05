@@ -1,9 +1,9 @@
 {
   "short_name": "VSGT Ble app",
   "name": "VSGT Ble app",
-  "icons": [],
+  "icons": ["logo.png"],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#000000",
+  "theme_color": "#83BF8D",
   "background_color": "#ffffff"
 }
