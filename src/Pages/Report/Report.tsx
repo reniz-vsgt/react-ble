@@ -1,4 +1,4 @@
-import { Tabs, TabsProps, Statistic, Space, Typography, Button, Empty, StatisticProps, Badge, Card, Menu } from 'antd';
+import { Tabs, TabsProps, Statistic, Space, Typography, Button, Empty, StatisticProps, Badge, Card } from 'antd';
 import { DownloadOutlined, HistoryOutlined } from '@ant-design/icons';
 import CountUp from 'react-countup';
 import './Report.css'
@@ -7,7 +7,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import { MedicalReport } from './ReportPdf';
 import { IReportProps } from './Report.interface';
-import { useEffect } from 'react';
 
 
 
@@ -22,9 +21,7 @@ const Report = () => {
     const gotoHome = () => {
         navigate("/record");
     }
-    useEffect(() => {
-        console.log(location.state, "-----> report");
-    }, [])
+
     if (location.state === null) {
         return (
             <Empty>

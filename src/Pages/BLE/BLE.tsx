@@ -107,7 +107,8 @@ const BLE = ({ sampleType }: { sampleType: string }) => {
                         navigate("/report", { state: { parameters, bgl, graphData, startTimestamp, formData, title: sampleType } });
                 }
                 else {
-                    const { parameters, graphData, bgl } = await uploadFile("PPG", finalData, baseUrl, token, device?.name ? device.name : "", startTimestamp, formData)
+                    const vitalsData = await uploadFile("PPG", finalData, baseUrl, token, device?.name ? device.name : "", startTimestamp, formData)
+                    const parameters = vitalsData.parameters
                     await uploadAccFile(token, baseUrl, device?.name ? device.name : "", startTimestamp, onDemandData)
                     setIsProcessing(false)
                     if (parameters)
