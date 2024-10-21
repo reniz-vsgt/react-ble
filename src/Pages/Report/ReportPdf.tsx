@@ -113,6 +113,7 @@ export const MedicalReport = ({ data, parameters, bgl }: any) => (
                 <Text style={styles.fieldLabel}>Gender: <Text style={styles.fieldValue}>{data.gender}</Text></Text>
                 <Text style={styles.fieldLabel}>Height: <Text style={styles.fieldValue}>{data.height} cm</Text></Text>
                 <Text style={styles.fieldLabel}>Weight: <Text style={styles.fieldValue}>{data.weight} kg</Text></Text>
+                <Text style={styles.fieldLabel}>Date and Time: <Text style={styles.fieldValue}>{data.startTime}</Text></Text>
             </View>
 
             <View style={styles.table}>
@@ -136,7 +137,7 @@ export const MedicalReport = ({ data, parameters, bgl }: any) => (
                         <Text style={styles.tableCol}>{parameter.value} {parameter.unit}</Text>
                     </View>
                 ))}
-            <Text style={styles.footer}>Generated on {data.startTime}</Text>
+            {/* <Text style={styles.footer}>Generated on {data.startTime}</Text> */}
             </View>
             <View>
                 <Text style={styles.smallText}>
