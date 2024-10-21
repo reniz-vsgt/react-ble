@@ -30,3 +30,12 @@
   width: 50px;
   margin-top: 1px;
 }
+
+.Footer{
+  padding: 10px;
+}
+
+.paragraph{
+  text-align: justify;
+  font-size: 10px;
+}

@@ -12,6 +12,7 @@ export interface IFormData {
   weight: number
   gender: string
   diabetic: string
+  meal?: string
   latestWeight: boolean
   comments: string
 }

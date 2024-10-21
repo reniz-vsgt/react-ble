@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { BluetoothDevice, BluetoothRemoteGATTCharacteristic, BluetoothRemoteGATTServer, IFormData, RequestDeviceOptions } from './BLE.types';
-import { Space, Typography, Button, Modal, Form, Input, FormProps, Switch, Select, message } from 'antd';
+import { Space, Typography, Button, Modal, FormProps, message, Tooltip } from 'antd';
 import { cardio } from 'ldrs'
 import './BLE.css'
-import TextArea from 'antd/es/input/TextArea';
-import { LinkOutlined, FormOutlined, CaretRightOutlined, StopOutlined } from '@ant-design/icons';
+import { LinkOutlined, FormOutlined, CaretRightOutlined, StopOutlined, QuestionOutlined, AreaChartOutlined } from '@ant-design/icons';
 import { uploadAccFile, uploadFile } from './BLE.api';
 import { useNavigate } from "react-router-dom";
 import { baseUrl, onDemandCharUUID, readCharUUID, readServiceUUID, writeCharUUID, writeServiceUUID, writeValue } from '../../Constants/Constants';
 import Loader from '../../Components/Loader';
+import Instructions from '../../Components/Instructions';
+import UserDetailsForm from '../../Components/UserDetailsForm';
+import { getTimestamp, mergeArrays, uint8ArrayToArray } from '../../utils/utils';
+import Clock from '../../Components/Clock';
 
-const { Option } = Select;
 
 cardio.register()
 
@@ -28,7 +30,7 @@ const BLE = ({ sampleType }: { sampleType: string }) => {
     const [min, setMin] = React.useState<number>(0);
     const [sec, setSec] = React.useState<number>(0);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [switchOn, setSwitchOn] = useState(false);
+    const [showInstruction, setshowInstruction] = useState(false);
     const [IsStarted, setIsStarted] = useState(false);
     const [onDemandData, setOnDemandData] = useState<string[][]>([]);
     const [battery, setBattery] = useState<number>(0);
@@ -46,7 +48,6 @@ const BLE = ({ sampleType }: { sampleType: string }) => {
     const [startTimestamp, setStartTimestamp] = useState<string>("")
     const [formData, setFormData] = useState<IFormData | null>(null)
 
-    const [form] = Form.useForm();
     const navigate = useNavigate();
 
     const errorAlert = (message: string) => {
@@ -55,20 +56,6 @@ const BLE = ({ sampleType }: { sampleType: string }) => {
             content: message,
         });
     };
-
-    const getTimestamp = () => {
-        const now = new Date();
-        const year = now.getFullYear();
-        const month = String(now.getMonth() + 1).padStart(2, '0');
-        const day = String(now.getDate()).padStart(2, '0');
-        const hours = String(now.getHours()).padStart(2, '0');
-        const minutes = String(now.getMinutes()).padStart(2, '0');
-        const seconds = String(now.getSeconds()).padStart(2, '0');
-        const milliseconds = String(now.getMilliseconds()).padStart(3, '0');
-        const formattedDateTime = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}`;
-        return formattedDateTime;
-    }
-
 
     const makeTimeForm = (time: number): void => {
         if (time < 60) {
@@ -119,30 +106,23 @@ const BLE = ({ sampleType }: { sampleType: string }) => {
             setIsProcessing(false)
         } catch (error: any) {
             setIsProcessing(false)
-            errorAlert(error.message)
+            console.error("Error: ", error.message)
+            errorAlert("No data please breath properly for atleast 40 seconds")
         }
     }
 
     useEffect((): void => {
-        if (seconds === 60)
-            stopTimer()
+        if (sampleType === "Metabolic") {
+            if (seconds === 60)
+                stopTimer()
+        }
+        else {
+            if (seconds === 300)
+                stopTimer()
+        }
+
         makeTimeForm(seconds);
-    }, [seconds]);
-
-
-
-    const mergeArrays = (arrays: any) => {
-        const totalLength = arrays.reduce((acc: any, arr: any) => acc + arr.length, 0);
-        const merged = new Uint8Array(totalLength);
-        let offset = 0;
-        arrays.forEach((arr: any) => {
-            merged.set(arr, offset);
-            offset += arr.length;
-        });
-        return merged;
-    };
-
-
+    }, [seconds, sampleType]);
 
     useEffect(() => {
         if (characteristicValue) {
@@ -217,8 +197,6 @@ const BLE = ({ sampleType }: { sampleType: string }) => {
         }
     };
 
-
-
     const readCharacteristic = async () => {
         try {
             setFinalData(new Uint8Array(0));
@@ -265,16 +243,6 @@ const BLE = ({ sampleType }: { sampleType: string }) => {
         }
     };
 
-    const uint8ArrayToArray = (uint8Array: Uint8Array) => {
-        var array = [getTimestamp()];
-        for (var i = 0; i < uint8Array.byteLength; i++) {
-            array.push((uint8Array[i]).toString());
-        }
-        return array;
-    }
-
-
-
     const onDemand = () => {
         onDemandChar?.readValue().then((val: any) => {
             const data = new Uint8Array(val?.buffer || new ArrayBuffer(0));
@@ -284,8 +252,6 @@ const BLE = ({ sampleType }: { sampleType: string }) => {
             ))
         })
     }
-
-
 
     const startTimer = async () => {
         if (timer) {
@@ -310,18 +276,13 @@ const BLE = ({ sampleType }: { sampleType: string }) => {
             values.latestWeight = false
         setFormData(values)
         setIsModalOpen(false)
+        // const formValues = values
+        // delete formValues['meal']
         localStorage.setItem('form', JSON.stringify(values));
 
     };
-
-    const fillForm = () => {
-        const formdata = localStorage.getItem("form")
-        if (formdata) {
-            const values = JSON.parse(formdata)
-            form.setFieldsValue(values)
-            setFormData(values)
-        }
-        setIsModalOpen(true)
+    const gotoDashboard = () => {
+        navigate("/");
     }
 
     if (Isprocessing) {
@@ -331,20 +292,22 @@ const BLE = ({ sampleType }: { sampleType: string }) => {
         <>
             {contextHolder}
             <br />
-            <Title style={{ color: "#205274", fontFamily: "'Poppins', sans-serif" }}>New Breath Sample</Title>
+            <Title style={{ color: "#205274", fontFamily: "'Poppins', sans-serif" }}>New Sample</Title>
             <Title style={{ fontFamily: "'Poppins', sans-serif" }} level={3}> Get your {sampleType} profile </Title>
             <div className="button-container">
+                <Button style={{ backgroundColor: "#83BF8D" }} type="primary" icon={<AreaChartOutlined />} onClick={gotoDashboard}>Dashboard</Button>
+                <Button style={{ backgroundColor: "#83BF8D" }} type="primary" icon={<QuestionOutlined />} onClick={() => setshowInstruction(true)}>Instructions</Button>
                 {device ? (<></>) : (
                     <Button style={{ backgroundColor: "#83BF8D" }} type="primary" icon={<LinkOutlined />} onClick={connectToDevice}>Connect to Device</Button>
                 )}
 
                 {device != null ? (
                     <>
-                        <Button style={{ backgroundColor: "#83BF8D" }} type="primary" icon={<FormOutlined />} onClick={fillForm}>Enter Details</Button>
+                        <Button style={{ backgroundColor: "#83BF8D" }} type="primary" icon={<FormOutlined />} onClick={() => setIsModalOpen(true)}>Enter Details</Button>
                         {IsStarted ? (
                             <Button style={{ backgroundColor: "#83BF8D" }} type="primary" icon={<StopOutlined />} onClick={stopTimer} disabled={!IsStarted}>Stop</Button>
                         ) : (
-                            <Button style={{ backgroundColor: "#83BF8D" }} type="primary" icon={<CaretRightOutlined />} onClick={readCharacteristic} disabled={IsStarted}>Start</Button>
+                                <Button style={{ backgroundColor: "#83BF8D" }} type="primary" icon={<CaretRightOutlined />} onClick={readCharacteristic} disabled={IsStarted}>Start</Button>
                         )}
                         <br />
 
@@ -367,11 +330,8 @@ const BLE = ({ sampleType }: { sampleType: string }) => {
                                     </div>
                                 )
                             }
-
                         </div>
-
                     </>
-
                 }
 
             </Space>
@@ -390,98 +350,16 @@ const BLE = ({ sampleType }: { sampleType: string }) => {
             ) : null}
 
             {device && (
-                <div className="timer-wrapper">
-                    <div>
-                        <span className="time">{min}</span>
-                        <span className="unit">min</span>
-                        <span className="time right">{sec}</span>
-                        <span className="unit">sec</span>
-                    </div>
-                </div>
+                <Clock min={min} sec={sec} />
             )}
 
 
             <Modal title="Enter Details" open={isModalOpen} footer={null} onCancel={handleCancel}>
-                <Form
-                    form={form}
-                    name="basic"
-                    labelCol={{ span: 8 }}
-                    wrapperCol={{ span: 16 }}
-                    style={{ maxWidth: 600 }}
-                    initialValues={{ remember: true }}
-                    onFinish={onFinish}
-                    autoComplete="on"
-                >
-                    <Form.Item
-                        label="Subject ID"
-                        name="subjectId"
-                        rules={[{ required: true, message: 'Please input your name!' }]}
-                    >
-                        <Input />
-                    </Form.Item>
-                    <Form.Item
-                        label="Age (years)"
-                        name="age"
-                        rules={[{ required: true, message: 'Please input your age!' }]}
-                    >
-                        <Input type='number' />
-                    </Form.Item>
-                    <Form.Item
-                        label="Height (cm)"
-                        name="height"
-                        rules={[{ required: true, message: 'Please input your height!' }]}
-                    >
-                        <Input type='number' />
-                    </Form.Item>
-                    <Form.Item
-                        label="Weight (kg)"
-                        name="weight"
-                        rules={[{ required: true, message: 'Please input your weight!' }]}
-                    >
-                        <Input type='number' />
-                    </Form.Item>
+                <UserDetailsForm onFinish={onFinish} />
+            </Modal>
 
-                    <Form.Item
-                        name="gender"
-                        label="Select Gender"
-                        rules={[{ required: true, message: 'Please select gender!' }]}
-                    >
-                        <Select placeholder="select your gender">
-                            <Option value="male">Male</Option>
-                            <Option value="female">Female</Option>
-                            <Option value="other">Other</Option>
-                        </Select>
-                    </Form.Item>
-
-                    <Form.Item
-                        name="diabetic"
-                        label="Select Diabetic Category"
-                        rules={[{ required: true, message: 'Please select diabetic!' }]}
-                    >
-                        <Select placeholder="select diabetic">
-                            <Option value="C1">Non-Diabetic (FBG = 126)</Option>
-                            <Option value="C2">Diabetic-controlled  (FBG = 126-150)</Option>
-                            <Option value="C3">Diabetic-moderate (FBG = 150-200)</Option>
-                            <Option value="C4">Diabetic-severe (FBG {'>'} 200)</Option>
-                        </Select>
-                    </Form.Item>
-
-                    <Form.Item label="Latest Weight ?" name={"latestWeight"} valuePropName="checked">
-                        <Switch
-                            onChange={() => setSwitchOn(!switchOn)}
-                            style={switchOn ? { backgroundColor: "#d3d3d3" } : { backgroundColor: "#83BF8D" }} />
-                    </Form.Item>
-
-                    <Form.Item label="Comments" name={"comments"}>
-                        <TextArea showCount maxLength={100} placeholder="Comments" />
-                    </Form.Item>
-
-                    <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-                        <Button type="primary" htmlType="submit" style={{ backgroundColor: "#83BF8D" }}>
-                            Submit
-                        </Button>
-                    </Form.Item>
-                </Form>
+            <Modal title="Instructions before start recording" open={showInstruction} footer={null} onCancel={() => setshowInstruction(false)}>
+                <Instructions setshowInstruction={setshowInstruction} />
             </Modal>
         </>
 

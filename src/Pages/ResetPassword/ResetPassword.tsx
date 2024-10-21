@@ -44,6 +44,7 @@ const ResetPassword = ({ email }: IProps) => {
             setLoading(false)
             navigate('/login')
         } catch (error: any) {
+            console.error("Error in reset password: ", error.message)
             errorAlert(error.message);
             setLoading(false)
         }

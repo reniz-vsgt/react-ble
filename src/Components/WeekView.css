@@ -1,0 +1,22 @@
+.weekViewContainer {
+    margin-top: 20px;
+}
+
+.card {
+    margin: 2px;
+    max-width: 50px;
+}
+
+.day{
+    color: #205274;
+}
+
+.date{
+    color: #83BF8D;
+    background: #f6ffed;
+    border-color: #205274;
+}
+
+.segment{
+    margin: 5px;
+}

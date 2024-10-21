@@ -1,0 +1,43 @@
+.controls{
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+}
+
+.Month-text{
+    margin: 0px;
+    padding: 0px;
+}
+
+.top-container{
+    display: flex;
+    justify-content: space-around;
+    gap: 5px;
+    margin-bottom: 20px;
+
+}
+
+
+.data-container {
+    display: flex;
+    gap: 10px;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+    margin-top: 15px;
+    
+}
+
+
+.card-title{
+    margin-top: 0px;
+    padding-top: 10px;
+    
+}
+
+.data-card{
+    height: 120px;
+    width: 120px;
+    border: 0.1px solid #83BF8D;
+    border-radius: 10px;
+}

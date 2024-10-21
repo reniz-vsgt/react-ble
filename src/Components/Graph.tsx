@@ -14,7 +14,6 @@ const Graph: React.FC<any> = ({
                     series={y}
                     height={200}
                     width={400}
-                    // margin={{ left: 35, right: 30, top: 50, bottom: 60 }}
                     grid={{ vertical: false, horizontal: true }}
                 />
             </div>

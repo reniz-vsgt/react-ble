@@ -21,3 +21,20 @@
   margin-left: 10px;
   font-size: 16px;
 }
+
+.stepsImage{
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  height: 250px
+}
+
+.steps-text{
+  text-align: justify;
+  color: black;
+}
+
+:where(.css-dev-only-do-not-override-1hpnbz2).ant-steps .ant-steps-item-process .ant-steps-item-icon {
+  background-color: #83BF8D;
+  border-color: #83BF8D;
+}
