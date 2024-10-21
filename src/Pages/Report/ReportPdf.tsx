@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
         fontSize: 10,
         color: '#555',
     },
-    disclaimer:{
+    disclaimer: {
         fontSize: 10,
     }
 });
@@ -137,11 +137,12 @@ export const MedicalReport = ({ data, parameters, bgl }: any) => (
                         <Text style={styles.tableCol}>{parameter.value} {parameter.unit}</Text>
                     </View>
                 ))}
-            {/* <Text style={styles.footer}>Generated on {data.startTime}</Text> */}
+                {/* <Text style={styles.footer}>Generated on {data.startTime}</Text> */}
             </View>
             <View>
+                <Text style={styles.fieldLabel}>Note: </Text>
                 <Text style={styles.smallText}>
-                Breath Band is designed and being developed to be useful as self monitoring and grossly tracking the metabolic and other given vital parameters for relative progress. However, the Breath Band is not a medical device and not recommended for professional medical judgment. Also note that it is not designed or intended for use in the diagnosis of disease or other conditions, or in the cure, mitigation, treatment, or prevention of any condition or disease. Please consult your healthcare provider prior to making any decisions related to your health.
+                    Breath Band is designed and being developed to be useful as self monitoring and grossly tracking the metabolic and other given vital parameters for relative progress. However, the Breath Band is not a medical device and not recommended for professional medical judgment. Also note that it is not designed or intended for use in the diagnosis of disease or other conditions, or in the cure, mitigation, treatment, or prevention of any condition or disease. Please consult your healthcare provider prior to making any decisions related to your health.
                 </Text>
             </View>
         </Page>
