@@ -12,6 +12,8 @@ const UserDetailsForm = ({ onFinish }: { onFinish: any }) => {
         if (formdata) {
             const values = JSON.parse(formdata)
             delete values['meal']
+            delete values['gt']
+            delete values['unit']
             form.setFieldsValue(values)
         }
     }), [])
@@ -20,7 +22,7 @@ const UserDetailsForm = ({ onFinish }: { onFinish: any }) => {
         {
             label: "Non-Diabetic",
             value: "C1",
-            desc: "Fasting Glucose is 126"
+            desc: "Fasting Glucose 70 to 126"
         },
         {
             label: "Diabetic-controlled",
@@ -56,6 +58,14 @@ const UserDetailsForm = ({ onFinish }: { onFinish: any }) => {
             desc: '3 hours to 6 hours of last meal',
         },
     ]
+    const selectUnit = (
+        <Form.Item name="unit" style={{marginBottom:0, height:'30px'}}>
+            <Select defaultValue={"mg/dL"} style={{margin:0}}>
+                <Option name='unit' value="mg/dL">mg/dL</Option>
+                <Option name='unit' value="mmol/L">mmol/L</Option>
+            </Select>
+        </Form.Item>
+    );
 
     return (
         <>
@@ -128,13 +138,18 @@ const UserDetailsForm = ({ onFinish }: { onFinish: any }) => {
                     label="Select Breath Sample Category"
                     rules={[{ required: true, message: 'Please select sample category!' }]}
                 >
-                    <Select 
+                    <Select
                         placeholder="select sample category"
                         options={meal_options}
-                        optionRender={(option)=>(
+                        optionRender={(option) => (
                             <p><strong>{option.data.label}</strong><br />{option.data.desc}</p>
                         )}
                     />
+                </Form.Item>
+                <Form.Item
+                    label="Glucometer Reading"
+                    name="gt">
+                    <Input placeholder="Glucometer reading" addonAfter={selectUnit} />
                 </Form.Item>
 
                 <Form.Item label="Latest Weight ?" name={"latestWeight"} valuePropName="checked">
@@ -144,7 +159,7 @@ const UserDetailsForm = ({ onFinish }: { onFinish: any }) => {
                 </Form.Item>
 
                 <Form.Item label="Comments" name={"comments"}>
-                    <TextArea showCount maxLength={100} placeholder="Comments" />
+                    <TextArea showCount maxLength={200} placeholder="Comments" />
                 </Form.Item>
 
                 <Form.Item wrapperCol={{ offset: 8, span: 16 }}>

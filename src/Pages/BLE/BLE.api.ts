@@ -37,7 +37,7 @@ export const uploadFile = async (type:string, fileData: Uint8Array, baseUrl: str
     };
     
     const response = await fetch(
-        `${baseUrl}/api/v2/vsgt-recording-service/upload${type}BinFile?deviceId=${deviceId}&startTime=${startTimestamp}&subjectId=${formData?.subjectId}&age=${formData?.age}&height=${formData?.height}&weight=${formData?.weight}&gender=${formData?.gender}&diabetic=${formData?.diabetic}&latestWeight=${formData?.latestWeight}&comments=${formData?.comments}&meal=${formData?.meal}`,
+        `${baseUrl}/api/v2/vsgt-recording-service/upload${type}BinFile?deviceId=${deviceId}&startTime=${startTimestamp}&subjectId=${formData?.subjectId}&age=${formData?.age}&height=${formData?.height}&weight=${formData?.weight}&gender=${formData?.gender}&diabetic=${formData?.diabetic}&latestWeight=${formData?.latestWeight}&comments=${formData?.comments}&meal=${formData?.meal}&gt=${formData?.gt}`,
         requestOptions
     );
     if (!response.ok) {

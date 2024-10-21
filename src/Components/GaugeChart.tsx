@@ -5,7 +5,6 @@ import { Chart, ArcElement, Tooltip, Legend } from 'chart.js';
 Chart.register(ArcElement, Tooltip, Legend);
 
 const GaugeChart = ({ riskScore, maxScore }: { riskScore: number, maxScore: number }) => {
-    const valueLabels = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36]
     const data = {
         labels: ['Good', 'Average', 'Poor', 'Derranged'],
         datasets: [
@@ -21,12 +20,12 @@ const GaugeChart = ({ riskScore, maxScore }: { riskScore: number, maxScore: numb
     const options = {
         responsive: true,
         maintainAspectRatio: false,
-        rotation: -90, // Start from the top
-        circumference: 180, // Half circle
-        cutout: '80%', // To create the gauge effect
+        rotation: -90,
+        circumference: 180,
+        cutout: '80%',
         plugins: {
             tooltip: {
-                enabled: false, // Disable tooltips
+                enabled: false,
             },
         },
     };
@@ -36,9 +35,9 @@ const GaugeChart = ({ riskScore, maxScore }: { riskScore: number, maxScore: numb
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        width: '100%', // Full width container
+        width: '100%',
         height: 'auto',
-        maxWidth: '400px', // Adjust the max width based on your design
+        maxWidth: '400px',
     };
 
     const needleStyle = (containerSize: number): React.CSSProperties => ({
@@ -47,15 +46,15 @@ const GaugeChart = ({ riskScore, maxScore }: { riskScore: number, maxScore: numb
         left: '50%',
         transform: `rotate(${(riskScore / maxScore) * 180 - 90}deg)`,
         transformOrigin: 'bottom',
-        width: `${containerSize * 0.02}px`, // Increased width (from 0.02)
-        height: `${containerSize * 0.45}px`, // Increased height (from 0.35)
+        width: `${containerSize * 0.02}px`, 
+        height: `${containerSize * 0.45}px`,
         backgroundColor: 'black',
         zIndex: 1,
-        clipPath: 'polygon(50% 0%, 0% 100%, 100% 100%)', // Arrow shape
+        clipPath: 'polygon(50% 0%, 0% 100%, 100% 100%)', 
     });
 
 
-    const gaugeSize = Math.min(window.innerWidth * 0.8, 300); // Dynamically adjust based on screen size
+    const gaugeSize = Math.min(window.innerWidth * 0.8, 300);
 
     return (
         <div style={{ width: '100%', height: 'auto', display: 'flex', justifyContent: 'center' }}>
@@ -67,7 +66,7 @@ const GaugeChart = ({ riskScore, maxScore }: { riskScore: number, maxScore: numb
                     top: '40%',
                     left: '50%',
                     transform: 'translate(-50%, -50%)',
-                    fontSize: `${gaugeSize * 0.1}px`, // Dynamically adjust font size
+                    fontSize: `${gaugeSize * 0.1}px`,
                 }}>
                 </div>
             </div>

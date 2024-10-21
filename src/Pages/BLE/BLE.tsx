@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { BluetoothDevice, BluetoothRemoteGATTCharacteristic, BluetoothRemoteGATTServer, IFormData, RequestDeviceOptions } from './BLE.types';
-import { Space, Typography, Button, Modal, FormProps, message, Tooltip } from 'antd';
+import { Space, Typography, Button, Modal, FormProps, message } from 'antd';
 import { cardio } from 'ldrs'
 import './BLE.css'
 import { LinkOutlined, FormOutlined, CaretRightOutlined, StopOutlined, QuestionOutlined, AreaChartOutlined } from '@ant-design/icons';
@@ -276,10 +276,9 @@ const BLE = ({ sampleType }: { sampleType: string }) => {
             values.latestWeight = false
         setFormData(values)
         setIsModalOpen(false)
-        // const formValues = values
-        // delete formValues['meal']
+        if (values.unit === "mmol/L" && values.gt)
+            values.gt = 18.018 * values.gt
         localStorage.setItem('form', JSON.stringify(values));
-
     };
     const gotoDashboard = () => {
         navigate("/");
@@ -292,7 +291,7 @@ const BLE = ({ sampleType }: { sampleType: string }) => {
         <>
             {contextHolder}
             <br />
-            <Title style={{ color: "#205274", fontFamily: "'Poppins', sans-serif" }}>New Sample</Title>
+            {/* <Title style={{ color: "#205274", fontFamily: "'Poppins', sans-serif" }}>New Sample</Title> */}
             <Title style={{ fontFamily: "'Poppins', sans-serif" }} level={3}> Get your {sampleType} profile </Title>
             <div className="button-container">
                 <Button style={{ backgroundColor: "#83BF8D" }} type="primary" icon={<AreaChartOutlined />} onClick={gotoDashboard}>Dashboard</Button>
@@ -307,7 +306,7 @@ const BLE = ({ sampleType }: { sampleType: string }) => {
                         {IsStarted ? (
                             <Button style={{ backgroundColor: "#83BF8D" }} type="primary" icon={<StopOutlined />} onClick={stopTimer} disabled={!IsStarted}>Stop</Button>
                         ) : (
-                                <Button style={{ backgroundColor: "#83BF8D" }} type="primary" icon={<CaretRightOutlined />} onClick={readCharacteristic} disabled={IsStarted}>Start</Button>
+                            <Button style={{ backgroundColor: "#83BF8D" }} type="primary" icon={<CaretRightOutlined />} onClick={readCharacteristic} disabled={IsStarted}>Start</Button>
                         )}
                         <br />
 
@@ -335,6 +334,8 @@ const BLE = ({ sampleType }: { sampleType: string }) => {
                 }
 
             </Space>
+            <br />
+            <br />
             {loader ? (
                 <div>
                     <l-cardio
@@ -344,14 +345,22 @@ const BLE = ({ sampleType }: { sampleType: string }) => {
                         color="#83BF8D"
                     ></l-cardio>
                     <br />
-                    <Title level={2}>Reading your data from device!!</Title>
-                    <Title level={3}>Keep Breathing ...</Title>
+                    {
+                        sampleType === "Metabolic" &&
+                        (
+                            <Title level={4}>Keep Breathing for 8 to 10 Breaths...</Title>
+                        )
+                    }
+
+
+                    {device && (
+                        <Clock min={min} sec={sec} />
+                    )}
+                    <Title level={3}>Reading your data from device!!</Title>
                 </div>
             ) : null}
 
-            {device && (
-                <Clock min={min} sec={sec} />
-            )}
+
 
 
             <Modal title="Enter Details" open={isModalOpen} footer={null} onCancel={handleCancel}>
