@@ -285,7 +285,12 @@ const BLE = ({ sampleType }: { sampleType: string }) => {
     }
 
     if (Isprocessing) {
-        return <Loader />
+        return (
+            <>
+                {contextHolder}
+                <Loader />
+            </>
+        )
     }
     return (
         <>
