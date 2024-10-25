@@ -276,7 +276,7 @@ const BLE = ({ sampleType }: { sampleType: string }) => {
             values.latestWeight = false
         setFormData(values)
         setIsModalOpen(false)
-        if (values.unit === "mmol/L" && values.gt)
+        if (values.unit === false && values.gt)
             values.gt = 18.018 * values.gt
         localStorage.setItem('form', JSON.stringify(values));
     };

@@ -14,7 +14,7 @@ export interface IFormData {
   diabetic: string
   meal?: string
   gt?: number
-  unit?: string
+  unit?: boolean
   latestWeight: boolean
   comments: string
 }

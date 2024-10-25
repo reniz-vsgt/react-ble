@@ -9,8 +9,8 @@ import Signup from '../SignUp/Signup';
 import ForgotPassword from '../ForgotPassword/ForgotPassword';
 import Record from '../Record/Record';
 import Dashboard from '../Dashboard/Dashboard';
-import { Footer } from 'antd/es/layout/layout';
-import Paragraph from 'antd/es/typography/Paragraph';
+// import { Footer } from 'antd/es/layout/layout';
+// import Paragraph from 'antd/es/typography/Paragraph';
 
 
 const { Content, Header } = Layout;

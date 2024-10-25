@@ -59,11 +59,8 @@ const UserDetailsForm = ({ onFinish }: { onFinish: any }) => {
         },
     ]
     const selectUnit = (
-        <Form.Item name="unit" style={{marginBottom:0, height:'30px'}}>
-            <Select defaultValue={"mg/dL"} style={{margin:0}}>
-                <Option name='unit' value="mg/dL">mg/dL</Option>
-                <Option name='unit' value="mmol/L">mmol/L</Option>
-            </Select>
+        <Form.Item name={"unit"} valuePropName="checked" style={{ marginBottom: 0, height: '30px'}}>
+            <Switch style={{ backgroundColor: "#83BF8D" }} checkedChildren="mg/dL" unCheckedChildren="mmol/L" defaultChecked />
         </Form.Item>
     );
 
@@ -71,8 +68,7 @@ const UserDetailsForm = ({ onFinish }: { onFinish: any }) => {
         <>
             <Form
                 form={form}
-                name="basic"
-                labelCol={{ span: 8 }}
+                name="userDetails"
                 wrapperCol={{ span: 16 }}
                 style={{ maxWidth: 600 }}
                 onFinish={onFinish}

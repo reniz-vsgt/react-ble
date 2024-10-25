@@ -1,14 +1,16 @@
-export const readServiceUUID = "6e400001-b5a3-f393-e0a9-e50e24dcca9e"
-export const onDemandCharUUID = "dd8c1308-3ae2-5c42-b8be-96721cd710fe"
-export const readCharUUID = "6e400003-b5a3-f393-e0a9-e50e24dcca9e"
-export const writeServiceUUID = "dd8c1300-3ae2-5c42-b8be-96721cd710fe"
-export const writeCharUUID = "dd8c1303-3ae2-5c42-b8be-96721cd710fe"
-export const writeValue = "0010110111110000"
+export const readServiceUUID = process.env.REACT_APP_READ_SERVICE_UUID ? process.env.REACT_APP_READ_SERVICE_UUID : ""
+export const onDemandCharUUID = process.env.REACT_APP_ONDEMAND_CHAR_UUID ? process.env.REACT_APP_ONDEMAND_CHAR_UUID : ""
+export const readCharUUID = process.env.REACT_APP_READ_CHAR_UUID ? process.env.REACT_APP_READ_CHAR_UUID : ""
+export const writeServiceUUID = process.env.REACT_APP_WRITE_SERVICE_UUID ? process.env.REACT_APP_WRITE_SERVICE_UUID : ""
+export const writeCharUUID = process.env.REACT_APP_WRITE_CHAR_UUID ? process.env.REACT_APP_WRITE_CHAR_UUID : ""
+export const writeValue = process.env.REACT_APP_WRITE_VALUE ? process.env.REACT_APP_WRITE_VALUE : ""
+
 export const baseUrl = process.env.REACT_APP_DEV_BASE_URL ? process.env.REACT_APP_DEV_BASE_URL : ""
 export const googleOAuth2Key = process.env.REACT_APP_SOCIAL_AUTH_GOOGLE_OAUTH2_KEY ? process.env.REACT_APP_SOCIAL_AUTH_GOOGLE_OAUTH2_KEY : ""
 export const googleOAuth2Secret = process.env.REACT_APP_SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET ? process.env.REACT_APP_SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET : ""
 export const googleOAuth2LoginRedirectUrl = process.env.REACT_APP_SOCIAL_AUTH_LOGIN_REDIRECT_URL ? process.env.REACT_APP_SOCIAL_AUTH_LOGIN_REDIRECT_URL : ""
 export const validationUrl = process.env.REACT_APP_VALIODATION_URL ? process.env.REACT_APP_VALIODATION_URL : ""
-export const googleAuthUrl = 'https://accounts.google.com/o/oauth2/v2/auth'
-export const VERSION = "v1"
-export const OTP_EXPIRY_TIME = 300
+export const googleAuthUrl = process.env.REACT_APP_GOOGLE_AUTH_URL ? process.env.REACT_APP_GOOGLE_AUTH_URL : ""
+
+export const VERSION = process.env.REACT_APP_VERSION ? process.env.REACT_APP_VERSION : ""
+export const OTP_EXPIRY_TIME:number = process.env.REACT_APP_OTP_EXPIRY_TIME ? Number(process.env.REACT_APP_OTP_EXPIRY_TIME) : 300
