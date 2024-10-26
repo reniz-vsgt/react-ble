@@ -9,7 +9,7 @@ const GaugeChart = ({ riskScore, maxScore }: { riskScore: number, maxScore: numb
         labels: ['Good', 'Average', 'Poor', 'Derranged'],
         datasets: [
             {
-                data: [36, 19, 14, 31],
+                data: [40, 20, 20, 20],
                 backgroundColor: ['#00ff00', '#ffff00', '#ff9900', '#ff0000'],
                 borderWidth: 0,
                 hoverOffset: 5,
