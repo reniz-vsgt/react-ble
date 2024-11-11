@@ -1,4 +1,5 @@
 import { Button, Form, Input, Select, Switch } from "antd"
+import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
 import TextArea from "antd/es/input/TextArea";
 import { useEffect, useState } from "react";
 const { Option } = Select;
@@ -7,16 +8,16 @@ const UserDetailsForm = ({ onFinish }: { onFinish: any }) => {
     const [switchOn, setSwitchOn] = useState(false);
     const [form] = Form.useForm();
 
-    useEffect((() => {
-        const formdata = localStorage.getItem("form")
-        if (formdata) {
-            const values = JSON.parse(formdata)
-            delete values['meal']
-            delete values['gt']
-            delete values['unit']
-            form.setFieldsValue(values)
-        }
-    }), [])
+    // useEffect((() => {
+    //     const formdata = localStorage.getItem("form")
+    //     if (formdata) {
+    //         const values = JSON.parse(formdata)
+    //         delete values['meal']
+    //         delete values['gt']
+    //         delete values['unit']
+    //         form.setFieldsValue(values)
+    //     }
+    // }), [])
 
     const diabetic_options = [
         {
@@ -59,7 +60,7 @@ const UserDetailsForm = ({ onFinish }: { onFinish: any }) => {
         },
     ]
     const selectUnit = (
-        <Form.Item name={"unit"} valuePropName="checked" style={{ marginBottom: 0, height: '30px'}}>
+        <Form.Item name={"unit"} valuePropName="checked" style={{ marginBottom: 0, height: '30px' }}>
             <Switch style={{ backgroundColor: "#83BF8D" }} checkedChildren="mg/dL" unCheckedChildren="mmol/L" defaultChecked />
         </Form.Item>
     );
@@ -151,7 +152,11 @@ const UserDetailsForm = ({ onFinish }: { onFinish: any }) => {
                 <Form.Item label="Latest Weight ?" name={"latestWeight"} valuePropName="checked">
                     <Switch
                         onChange={() => setSwitchOn(!switchOn)}
-                        style={switchOn ? { backgroundColor: "#d3d3d3" } : { backgroundColor: "#83BF8D" }} />
+                        style={switchOn ? { backgroundColor: "#83BF8D" } : { backgroundColor: "#d3d3d3" }}
+                        checkedChildren={<CheckOutlined />}
+                        unCheckedChildren={<CloseOutlined />}
+
+                    />
                 </Form.Item>
 
                 <Form.Item label="Comments" name={"comments"}>
