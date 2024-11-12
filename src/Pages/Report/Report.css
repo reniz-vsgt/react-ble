@@ -28,9 +28,25 @@
     padding-top: 10px;
 }
 
+.data-card-graphics{
+    height: 120px;
+    width: 120px;
+    border: 0.1px solid #83BF8D;
+    border-radius: 10px;
+    
+    display: flex;
+    flex-direction: column;
+    justify-content:space-evenly;
+    align-items: center;
+    margin: 5px;
+}
+
 .data-card{
     height: 120px;
     width: 120px;
     border: 0.1px solid #83BF8D;
     border-radius: 10px;
+}
+.card-container{
+    padding: 20px;
 }

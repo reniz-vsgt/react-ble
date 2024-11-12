@@ -8,16 +8,16 @@ const UserDetailsForm = ({ onFinish }: { onFinish: any }) => {
     const [switchOn, setSwitchOn] = useState(false);
     const [form] = Form.useForm();
 
-    // useEffect((() => {
-    //     const formdata = localStorage.getItem("form")
-    //     if (formdata) {
-    //         const values = JSON.parse(formdata)
-    //         delete values['meal']
-    //         delete values['gt']
-    //         delete values['unit']
-    //         form.setFieldsValue(values)
-    //     }
-    // }), [])
+    useEffect((() => {
+        const formdata = localStorage.getItem("form")
+        if (formdata) {
+            const values = JSON.parse(formdata)
+            delete values['meal']
+            delete values['gt']
+            delete values['unit']
+            form.setFieldsValue(values)
+        }
+    }), [])
 
     const diabetic_options = [
         {

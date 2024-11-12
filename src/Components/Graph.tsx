@@ -4,7 +4,7 @@ const Graph: React.FC<any> = ({
     x,
     y
 }) => {
-
+    
     return (
         <>
             <div style={{ overflow: 'scroll' }}>

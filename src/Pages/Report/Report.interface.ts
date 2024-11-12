@@ -5,13 +5,20 @@ export interface IBglValues {
     range2: number,
     bgl: number,
     unit: string,
-    name: string
+    name: string,
+    description: string
+    percentage: number
+    strokeColor: string
 }
 
 export interface IParameters {
     name: string
     value: number
     unit: string
+    isGraphic: boolean
+    description: string
+    percentage: number
+    strokeColor: string
 }
 
 export interface IXAxis {
