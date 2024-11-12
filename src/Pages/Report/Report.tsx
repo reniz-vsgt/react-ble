@@ -1,6 +1,5 @@
-import { Tabs, TabsProps, Statistic, Space, Typography, Button, Empty, StatisticProps, Badge, Card } from 'antd';
+import { Tabs, TabsProps, Space, Typography, Button, Empty, Badge, Card, Progress } from 'antd';
 import { DownloadOutlined, HistoryOutlined } from '@ant-design/icons';
-import CountUp from 'react-countup';
 import './Report.css'
 import Graph from '../../Components/Graph';
 import { useLocation, useNavigate } from "react-router-dom";
@@ -9,9 +8,7 @@ import { MedicalReport } from './ReportPdf';
 import { IReportProps } from './Report.interface';
 
 
-
-
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 
 const Report = () => {
@@ -33,18 +30,13 @@ const Report = () => {
 
     const { parameters, bgl, graphData, startTimestamp, formData, title }: IReportProps = location.state
 
-    const formatter: StatisticProps['formatter'] = (value) => (
-        <CountUp end={value as number} separator="," />
-    );
-
     const items: TabsProps['items'] = graphData?.map((graph) => {
         return {
             key: graph.label,
-            label: graph.label,
+            label: graph.label === "Breath CO2" ? <p>Breath CO<sub>2</sub></p> : graph.label,
             children: <Graph x={graph.xAxis} y={graph.yAxis} />,
         }
     })
-
 
 
     const getDiabeticStatus = (diabeticKey: string) => {
@@ -92,29 +84,39 @@ const Report = () => {
                     <br />
                     <Badge.Ribbon text={startTimestamp} color="#83BF8D" placement={'start'} >
                         <br />
-                        <Card styles={{ body: { paddingTop: "0" } }} className="card-header" title={
-                            <p>
-                                {title} profile <br /> {formData?.subjectId}
-                            </p>
+                        <Card styles={{ body: { paddingTop: "0" } }} className="card-header" title={""
+                            // <p>
+                            //     {title} profile <br /> {formData?.subjectId}
+                            // </p>
                         } >
 
                             <div className="card-container">
                                 {bgl && (
-                                    <Statistic title={
-                                        <div>
-                                            <Title className='card-title' level={5}>{`${bgl.name} (${bgl.unit})`}</Title>
-                                            <p>({bgl.range1} to {bgl.range2} {bgl.unit})</p>
-                                        </div>
-                                    } value={(bgl?.bgl).toFixed(2)} formatter={formatter} />
+                                    <div>
+                                        <Title className='card-title' level={5}>{`${bgl.name}`}</Title>
+                                        <Title style={{ color: "#205274", margin: 0, padding: '5px' }} level={5}>{bgl.description}</Title>
+                                        <Progress steps={5} percent={bgl.percentage} showInfo={false} strokeColor={bgl.strokeColor} />
+                                        <p style={{marginTop:'0'}}>({bgl.range1} to {bgl.range2} {bgl.unit})</p>
+                                    </div>
                                 )}
-                                
+
                                 <div className="data-container">
                                     {parameters.map((parameter) => (
-                                        parameter.name === "Skin Temperature"?<></>:
-                                        <div className='data-card'>
-                                            <Title style={{color:"#205274"}} level={3}>{parameter.value} </Title>
-                                            <p style={{fontSize: "12px", paddingLeft: "5px", paddingRight: "5px"}}>{parameter.name} {parameter.unit}</p>
-                                        </div>
+                                        parameter.name === "Calories from glucose"?<></>:
+                                        <>
+                                            {parameter.isGraphic ? (
+                                                <div className='data-card-graphics'>
+                                                    <Title style={{ color: "#205274", margin: 0, padding: '5px' }} level={5}>{parameter.description}</Title>
+                                                    <Progress steps={5} percent={parameter.percentage} showInfo={false} strokeColor={parameter.strokeColor} />
+                                                    <Text strong style={{ color: "#205274", fontSize: "12px", paddingLeft: "5px", paddingRight: "5px", margin: 0 }}>{parameter.name} <br /> {parameter.unit}</Text>
+                                                </div>
+                                            ) : (
+                                                <div className='data-card'>
+                                                    <Title style={{ color: "#205274" }} level={4}>{parameter.value} </Title>
+                                                    <Text strong style={{color: "#205274", fontSize: "12px", paddingLeft: "5px", paddingRight: "5px" }}> {parameter.name} <br /> {parameter.unit} </Text>
+                                                </div>
+                                            )}
+                                        </>
                                     ))}
                                 </div>
                                 <br />

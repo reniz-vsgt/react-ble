@@ -278,7 +278,7 @@ const BLE = ({ sampleType }: { sampleType: string }) => {
         setIsModalOpen(false)
         if (values.unit === false && values.gt)
             values.gt = 18.018 * values.gt
-        // localStorage.setItem('form', JSON.stringify(values));
+        localStorage.setItem('form', JSON.stringify(values));
     };
     const gotoDashboard = () => {
         navigate("/");
