@@ -15,7 +15,7 @@ export interface IParameters {
     name: string
     value: number
     unit: string
-    isGraphic: boolean
+    isDisplay: boolean
     description: string
     percentage: number
     strokeColor: string
