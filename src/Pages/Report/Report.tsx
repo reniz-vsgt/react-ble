@@ -9,6 +9,7 @@ import { IReportProps } from './Report.interface';
 
 
 const { Title, Text } = Typography;
+const { Meta } = Card;
 
 
 const Report = () => {
@@ -103,12 +104,26 @@ const Report = () => {
                                 <div className="data-container">
                                     {parameters.map((parameter) => (
                                         parameter.isDisplay && (
-                                            <div className='data-card-graphics'>
-                                                <Title style={{ color: "#205274", margin: 0, padding: '5px' }} level={parameter.percentage === 0 ? 4 : 5}>{parameter.description}</Title>
-                                                {parameter.percentage !== 0 && 
-                                                <Progress steps={5} percent={parameter.percentage} showInfo={false} strokeColor={parameter.strokeColor} />}
-                                                <Text strong style={{ color: "#205274", fontSize: "12px", paddingLeft: "5px", paddingRight: "5px", margin: 0 }}>{parameter.name} <br /> {parameter.unit}</Text>
-                                            </div>
+                                            parameter.name === "Dominance" ? (
+                                                <>
+                                                    <div className='data-container border'>
+                                                        <div className='data-card'>
+                                                            <Title style={{ color: "#205274", margin: 0, padding: '5px' }} level={5}>{parameter.description}</Title>
+                                                            <Text strong style={{ color: "#205274", fontSize: "12px", paddingLeft: "5px", paddingRight: "5px", margin: 0 }}>{parameter.name}</Text>
+                                                        </div>
+                                                        <div className='data-card nostril'>
+                                                            <img src="/nostril.png" alt="nostril" style={{ height: "100px" }} />
+                                                        </div>
+                                                    </div>
+                                                </>
+                                            ) :
+
+                                                <div className='data-card border'>
+                                                    <Title style={{ color: "#205274", margin: 0, padding: '5px' }} level={5}>{parameter.name}</Title>
+                                                    {parameter.percentage !== 0 &&
+                                                        <Progress steps={5} percent={parameter.percentage} showInfo={false} strokeColor={parameter.strokeColor} />}
+                                                    <Text strong style={{ color: "#205274", fontSize: "12px", paddingLeft: "5px", paddingRight: "5px", margin: 0 }}>{parameter.description} {parameter.percentage === 0 ? parameter.unit : ""}</Text>
+                                                </div>
                                         )
                                     ))}
                                 </div>

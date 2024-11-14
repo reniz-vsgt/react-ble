@@ -19,16 +19,6 @@
 }
 
 
-.data-container {
-    display: flex;
-    gap: 10px;
-    justify-content: space-evenly;
-    flex-wrap: wrap;
-    margin-top: 15px;
-    
-}
-
-
 .card-title{
     margin-top: 0px;
     padding-top: 10px;
