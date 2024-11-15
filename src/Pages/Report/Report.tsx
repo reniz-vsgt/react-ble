@@ -112,7 +112,7 @@ const Report = () => {
                                     {parameters.map((parameter) => (
                                         parameter.name === "Skin Temperature"?<></>:
                                         <div className='data-card'>
-                                            <Title style={{color:"#205274"}} level={3}>{parameter.value} </Title>
+                                            <Title style={{color:"#205274"}} level={4}>{parameter.value} </Title>
                                             <p style={{fontSize: "12px", paddingLeft: "5px", paddingRight: "5px"}}>{parameter.name} {parameter.unit}</p>
                                         </div>
                                     ))}
