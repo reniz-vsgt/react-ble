@@ -129,7 +129,7 @@ export const MedicalReport = ({ data, parameters, bgl }: any) => (
                             <Text>{bgl.bgl} {bgl.unit}</Text>
                             <Text style={styles.smallText}>(Your estimated range: {bgl.range1} - {bgl.range2} {bgl.unit})</Text>
                         </View>
-                        <Text style={styles.tableCol}>{bgl.NormalRange}</Text>
+                        <Text style={styles.tableCol}>{bgl.normalRange}</Text>
                     </View>
                 )}
 
@@ -137,10 +137,9 @@ export const MedicalReport = ({ data, parameters, bgl }: any) => (
                     <View style={styles.tableRow}>
                         <Text style={styles.tableCol}>{parameter.name}</Text>
                         <Text style={styles.tableCol}>{parameter.value} {parameter.unit}</Text>
-                        <Text style={styles.tableCol}>{parameter.NormalRange}</Text>
+                        <Text style={styles.tableCol}>{parameter.normalRange}</Text>
                     </View>
                 ))}
-                {/* <Text style={styles.footer}>Generated on {data.startTime}</Text> */}
             </View>
             <View>
                 <Text style={styles.fieldLabel}>Note: </Text>
