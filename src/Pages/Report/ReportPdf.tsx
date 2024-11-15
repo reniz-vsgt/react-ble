@@ -3,7 +3,7 @@ import { Page, Text, View, Document, StyleSheet } from '@react-pdf/renderer';
 const styles = StyleSheet.create({
     page: {
         padding: 40,
-        fontSize: 12,
+        fontSize: 10,
         fontFamily: 'Helvetica',
         lineHeight: 1.5,
         backgroundColor: '#f6f6f5',
@@ -11,7 +11,7 @@ const styles = StyleSheet.create({
     headerContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginBottom: 20,
+        marginBottom: 10,
         borderBottom: '2px solid #83BF8D',
         paddingBottom: 10,
     },
@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
         color: '#83BF8D',
     },
     sectionTitle: {
-        fontSize: 14,
+        fontSize: 12,
         fontWeight: 'bold',
         color: '#333',
         marginBottom: 8,
@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
         color: '#777',
     },
     smallText: {
-        fontSize: 10,
+        fontSize: 8,
         color: '#555',
     },
     disclaimer: {
@@ -120,6 +120,7 @@ export const MedicalReport = ({ data, parameters, bgl }: any) => (
                 <View style={styles.tableRow}>
                     <Text style={styles.tableColHeader}>Parameter</Text>
                     <Text style={styles.tableColHeader}>Value</Text>
+                    <Text style={styles.tableColHeader}>Normal Range</Text>
                 </View>
                 {bgl && (
                     <View style={styles.tableRow}>
@@ -128,6 +129,7 @@ export const MedicalReport = ({ data, parameters, bgl }: any) => (
                             <Text>{bgl.bgl} {bgl.unit}</Text>
                             <Text style={styles.smallText}>(Your estimated range: {bgl.range1} - {bgl.range2} {bgl.unit})</Text>
                         </View>
+                        <Text style={styles.tableCol}>{bgl.normalRange}</Text>
                     </View>
                 )}
 
@@ -135,9 +137,9 @@ export const MedicalReport = ({ data, parameters, bgl }: any) => (
                     <View style={styles.tableRow}>
                         <Text style={styles.tableCol}>{parameter.name}</Text>
                         <Text style={styles.tableCol}>{parameter.value} {parameter.unit}</Text>
+                        <Text style={styles.tableCol}>{parameter.normalRange}</Text>
                     </View>
                 ))}
-                {/* <Text style={styles.footer}>Generated on {data.startTime}</Text> */}
             </View>
             <View>
                 <Text style={styles.fieldLabel}>Note: </Text>

@@ -9,8 +9,6 @@ import { IReportProps } from './Report.interface';
 
 
 const { Title, Text } = Typography;
-const { Meta } = Card;
-
 
 const Report = () => {
 
